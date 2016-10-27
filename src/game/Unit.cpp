@@ -460,6 +460,15 @@ float Unit::GetCombatDistance(Unit const* target, bool forMeleeRange) const
 
 bool Unit::CanReachWithMeleeAttack(Unit const* pVictim, float flat_mod /*= 0.0f*/) const
 {
+    // enhance mobs melee attack
+    if (!pVictim)                  // avoiding some crash, even though I don't know it will work.
+        return false;
+
+    if (movespline->Finalized() && // if the mob stop moving and want to melee attack 
+            !isInRoots())          // except some spell trapped him 
+        return true;               // let him can
+    // enhance mobs melee attack
+
     MANGOS_ASSERT(pVictim);
 
     float reach = GetCombatReach(pVictim, true, flat_mod);
