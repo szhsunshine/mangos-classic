@@ -464,9 +464,9 @@ bool Unit::CanReachWithMeleeAttack(Unit const* pVictim, float flat_mod /*= 0.0f*
     if (!pVictim)                  // avoiding some crash, even though I don't know it will work.
         return false;
 
-    if (movespline->Finalized() && // if the mob stop moving and want to melee attack 
-            !isInRoots())          // except some spell trapped him 
-        return true;               // let him can
+    if (movespline && movespline->Finalized() && // if the mob want to melee attack but stop moving
+            !isInRoots())                        // except some spell trapped him 
+        return true;                             // let him can
     // enhance mobs melee attack
 
     MANGOS_ASSERT(pVictim);
