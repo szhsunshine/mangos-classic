@@ -1152,8 +1152,8 @@ void WorldSession::HandleResetInstancesOpcode(WorldPacket& /*recv_data*/)
 
     if (Group* pGroup = _player->GetGroup())
     {
-        if (pGroup->IsLeader(_player->GetObjectGuid()))
-            // pGroup->ResetInstances(INSTANCE_RESET_ALL, _player); // forbit instance reset
+        //if (pGroup->IsLeader(_player->GetObjectGuid()))
+        //    pGroup->ResetInstances(INSTANCE_RESET_ALL, _player); // forbit instance reset
     }
     else
         _player->ResetInstances(INSTANCE_RESET_ALL);
