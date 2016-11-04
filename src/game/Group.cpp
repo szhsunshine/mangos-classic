@@ -30,6 +30,28 @@
 #include "MapManager.h"
 #include "MapPersistentStateMgr.h"
 
+GroupMemberStatus GetGroupMemberStatus(const Player *member = nullptr)
+{
+    uint8 flags = MEMBER_STATUS_OFFLINE;
+    if (member && member->GetSession() && !member->GetSession()->PlayerLogout())
+    {
+        flags |= MEMBER_STATUS_ONLINE;
+        if (member->IsPvP())
+            flags |= MEMBER_STATUS_PVP;
+        if (member->isDead())
+            flags |= MEMBER_STATUS_DEAD;
+        if (member->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST))
+            flags |= MEMBER_STATUS_GHOST;
+        if (member->IsFFAPvP())
+            flags |= MEMBER_STATUS_PVP_FFA;
+        if (member->isAFK())
+            flags |= MEMBER_STATUS_AFK;
+        if (member->isDND())
+            flags |= MEMBER_STATUS_DND;
+    }
+    return GroupMemberStatus(flags);
+}
+
 //===================================================
 //============== Group ==============================
 //===================================================
@@ -67,6 +89,7 @@ bool Group::Create(ObjectGuid guid, const char* name)
 {
     m_leaderGuid = guid;
     m_leaderName = name;
+    m_leaderLastOnline = time(nullptr);
 
     m_groupType  = isBGGroup() ? GROUPTYPE_RAID : GROUPTYPE_NORMAL;
 
@@ -125,6 +148,8 @@ bool Group::LoadGroupFromDB(Field* fields)
     // group leader not exist
     if (!sObjectMgr.GetPlayerNameByGUID(m_leaderGuid, m_leaderName))
         return false;
+
+    m_leaderLastOnline = time(nullptr);
 
     m_groupType  = fields[13].GetBool() ? GROUPTYPE_RAID : GROUPTYPE_NORMAL;
 
@@ -273,7 +298,7 @@ bool Group::AddMember(ObjectGuid guid, const char* name)
 uint32 Group::RemoveMember(ObjectGuid guid, uint8 method)
 {
     // remove member and change leader (if need) only if strong more 2 members _before_ member remove
-    if (GetMembersCount() > uint32(isBGGroup() ? 1 : 2))    // in BG group case allow 1 members group
+    if (GetMembersCount() > GetMembersMinCount())
     {
         bool leaderChanged = _removeMember(guid);
 
@@ -308,8 +333,8 @@ uint32 Group::RemoveMember(ObjectGuid guid, uint8 method)
 
         if (leaderChanged)
         {
-            WorldPacket data(SMSG_GROUP_SET_LEADER, (m_memberSlots.front().name.size() + 1));
-            data << m_memberSlots.front().name;
+            WorldPacket data(SMSG_GROUP_SET_LEADER, (m_leaderName.size() + 1));
+            data << m_leaderName;
             BroadcastPacket(&data, true);
         }
 
@@ -505,13 +530,9 @@ void Group::SendUpdate()
         {
             if (citr->guid == citr2->guid)
                 continue;
-            Player* member = sObjectMgr.GetPlayer(citr2->guid);
-            uint8 onlineState = (member && member->GetSession() && !member->GetSession()->PlayerLogout()) ? MEMBER_STATUS_ONLINE : MEMBER_STATUS_OFFLINE;
-            onlineState = onlineState | ((isBGGroup()) ? MEMBER_STATUS_PVP : 0);
-
             data << citr2->name;
             data << citr2->guid;
-            data << uint8(onlineState);
+            data << uint8(GetGroupMemberStatus(sObjectMgr.GetPlayer(citr2->guid)));
             data << (uint8)(citr2->group | (citr2->assistant ? 0x80 : 0));
         }
 
@@ -542,6 +563,46 @@ void Group::UpdatePlayerOutOfRange(Player* pPlayer)
         if (Player* player = itr->getSource())
             if (player != pPlayer && !player->HaveAtClient(pPlayer))
                 player->GetSession()->SendPacket(&data);
+}
+
+void Group::UpdatePlayerOnlineStatus(Player* player, bool online /*= true*/)
+{
+    if (!player)
+        return;
+    const ObjectGuid guid = player->GetObjectGuid();
+    if (!IsMember(guid))
+        return;
+
+    SendUpdate();
+    if (online)
+    {
+        player->SetGroupUpdateFlag(GROUP_UPDATE_FULL);
+        UpdatePlayerOutOfRange(player);
+    }
+    else if (IsLeader(guid))
+        m_leaderLastOnline = time(nullptr);
+}
+
+void Group::UpdateOfflineLeader(time_t time, uint32 delay)
+{
+    // Do not update BG groups, BGs take care of offliners
+    if (isBGGroup())
+        return;
+
+    // Check leader presence
+    // TODO: Add a list of loading players or online/offline counter?
+    // FIXME: If player is loading a new map longer than delay, the leadership is going to be transfered
+    if (sObjectMgr.GetPlayer(m_leaderGuid))
+    {
+        m_leaderLastOnline = time;
+        return;
+    }
+
+    // Check for delay
+    if ((time - m_leaderLastOnline) < delay)
+        return;
+
+    _chooseLeader(true);
 }
 
 void Group::BroadcastPacket(WorldPacket* packet, bool ignorePlayersInBGRaid, int group, ObjectGuid ignore)
@@ -695,12 +756,56 @@ bool Group::_removeMember(ObjectGuid guid)
     if (m_leaderGuid == guid)                               // leader was removed
     {
         _updateLeaderFlag(true);
-        if (GetMembersCount() > 0)
-            _setLeader(m_memberSlots.front().guid);
+        _chooseLeader();
         return true;
     }
 
     return false;
+}
+
+void Group::_chooseLeader(bool offline /*= false*/)
+{
+    if (GetMembersCount() < GetMembersMinCount())
+        return;
+
+    ObjectGuid first = ObjectGuid(); // First available: if no suitable canditates are found
+    ObjectGuid chosen = ObjectGuid(); // Player matching prio creteria
+
+    for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)
+    {
+        if (citr->guid == m_leaderGuid)
+            continue;
+
+        // Prioritize online players
+        Player* player = sObjectMgr.GetPlayer(citr->guid);
+        if (!player || !player->GetSession() || player->GetGroup() != this)
+            continue;
+
+        // Prioritize assistants for raids
+        if (isRaidGroup() && !citr->assistant)
+        {
+            if (first.IsEmpty())
+                first = citr->guid;
+            continue;
+        }
+
+        chosen = citr->guid;
+        break;
+    }
+
+    if (chosen.IsEmpty())
+        chosen = first;
+
+    // If we are choosing a new leader due to inactivity, check if everyone is offline first
+    if (offline && chosen.IsEmpty())
+        return;
+
+    // Still nobody online...
+    if (chosen.IsEmpty())
+        chosen = m_memberSlots.front().guid;
+
+    // Do announce if we are choosing a new leader due to old one being offline
+    return (offline ? ChangeLeader(chosen) : _setLeader(chosen));
 }
 
 void Group::_setLeader(ObjectGuid guid)
@@ -761,6 +866,7 @@ void Group::_setLeader(ObjectGuid guid)
     _updateLeaderFlag(true);
     m_leaderGuid = slot->guid;
     m_leaderName = slot->name;
+    m_leaderLastOnline = time(nullptr);
     _updateLeaderFlag();
 }
 

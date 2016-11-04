@@ -1355,6 +1355,9 @@ void Player::SetDeathState(DeathState s)
         if (getClass() == CLASS_WARRIOR)
             CastSpell(this, SPELL_ID_PASSIVE_BATTLE_STANCE, true);
     }
+
+    if (GetGroup())
+        SetGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
 
 bool Player::BuildEnumData(QueryResult* result, WorldPacket* p_data)
@@ -1473,6 +1476,9 @@ void Player::ToggleAFK()
 {
     ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_AFK);
 
+    if (GetGroup())
+        SetGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
+
     // afk player not allowed in battleground
     if (isAFK() && InBattleGround())
         LeaveBattleground();
@@ -1481,6 +1487,9 @@ void Player::ToggleAFK()
 void Player::ToggleDND()
 {
     ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_DND);
+
+    if (GetGroup())
+        SetGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
 
 ChatTagFlags Player::GetChatTag() const
@@ -3079,7 +3088,12 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
     // Always try to remove all dependent spells if present (needed to reset some talents properly)
     SpellLearnSpellMapBounds spell_bounds = sSpellMgr.GetSpellLearnSpellMapBounds(spell_id);
     for (SpellLearnSpellMap::const_iterator child_itr = spell_bounds.first; child_itr != spell_bounds.second; ++child_itr)
-        removeSpell(child_itr->second.spell, !IsPassiveSpell(child_itr->second.spell), learn_low_rank);
+        removeSpell(child_itr->second.spell, !IsPassiveSpell(child_itr->second.spell), !IsPassiveSpell(child_itr->second.spell));
+
+    // search again just in case
+    itr = m_spells.find(spell_id);
+    if (itr == m_spells.end())
+        return;
 
     PlayerSpell& playerSpell = itr->second;
     if (playerSpell.state == PLAYERSPELL_REMOVED || (disabled && playerSpell.disabled))
@@ -15549,6 +15563,9 @@ void Player::SetFFAPvP(bool state)
         SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_FFA_PVP);
     else
         RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_FFA_PVP);
+
+    if (GetGroup())
+        SetGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
 
 void Player::UpdateDuelFlag(time_t currTime)

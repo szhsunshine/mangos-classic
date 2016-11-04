@@ -48,6 +48,7 @@
 #include "CreatureLinkingMgr.h"
 
 #include <math.h>
+#include <array>
 
 float baseMoveSpeed[MAX_MOVE_TYPE] =
 {
@@ -58,6 +59,142 @@ float baseMoveSpeed[MAX_MOVE_TYPE] =
     2.5f,                                                   // MOVE_SWIM_BACK
     3.141594f,                                              // MOVE_TURN_RATE
 };
+
+typedef std::array<uint32, NUM_SPELL_PARTIAL_RESISTS> SpellPartialResistChanceEntry;
+typedef std::vector<SpellPartialResistChanceEntry> SpellPartialResistDistribution;
+static inline SpellPartialResistDistribution InitSpellPartialResistDistribution()
+{
+    // Precalculated chances for 0-100% mitigation
+    // We use integer random instead of floats, so each chance is premultiplied by 100 (100.00 becomes 10000)
+    const SpellPartialResistDistribution precalculated = {
+        {{10000,0,0,0,0}},
+        {{9700,200,100,0,0}},
+        {{9400,400,200,0,0}},
+        {{9000,800,200,0,0}},
+        {{8700,1000,300,0,0}},
+        {{8400,1200,400,0,0}},
+        {{8200,1300,400,100,0}},
+        {{7900,1500,500,100,0}},
+        {{7600,1700,600,100,0}},
+        {{7300,1900,700,100,0}},
+        {{6900,2300,700,100,0}},
+        {{6600,2500,800,100,0}},
+        {{6300,2700,900,100,0}},
+        {{6000,2900,1000,100,0}},
+        {{5800,3000,1000,200,0}},
+        {{5400,3300,1100,200,0}},
+        {{5100,3600,1100,200,0}},
+        {{4800,3800,1200,200,0}},
+        {{4400,4200,1200,200,0}},
+        {{4100,4400,1300,200,0}},
+        {{3700,4800,1300,200,0}},
+        {{3400,5000,1400,200,0}},
+        {{3100,5200,1500,200,0}},
+        {{3000,5200,1500,200,100}},
+        {{2800,5300,1500,300,100}},
+        {{2500,5500,1600,300,100}},
+        {{2400,5400,1700,400,100}},
+        {{2300,5300,1800,500,100}},
+        {{2200,5100,2100,500,100}},
+        {{2100,5000,2200,600,100}},
+        {{2000,4900,2400,600,100}},
+        {{1900,4700,2600,700,100}},
+        {{1800,4600,2700,800,100}},
+        {{1700,4400,3000,800,100}},
+        {{1600,4300,3100,900,100}},
+        {{1500,4200,3200,1000,100}},
+        {{1400,4100,3300,1100,100}},
+        {{1300,3900,3600,1100,100}},
+        {{1300,3600,3800,1200,100}},
+        {{1200,3500,3900,1300,100}},
+        {{1100,3400,4000,1400,100}},
+        {{1000,3300,4100,1500,100}},
+        {{900,3100,4400,1500,100}},
+        {{800,3000,4500,1600,100}},
+        {{800,2700,4700,1700,100}},
+        {{700,2600,4800,1800,100}},
+        {{600,2500,4900,1900,100}},
+        {{600,2300,5000,1900,200}},
+        {{500,2200,5100,2000,200}},
+        {{300,2200,5300,2000,200}},
+        {{200,2100,5400,2100,200}},
+        {{200,2000,5300,2200,300}},
+        {{200,2000,5100,2200,500}},
+        {{200,1900,5000,2300,600}},
+        {{100,1900,4900,2500,600}},
+        {{100,1800,4800,2600,700}},
+        {{100,1700,4700,2700,800}},
+        {{100,1600,4500,3000,800}},
+        {{100,1500,4400,3100,900}},
+        {{100,1500,4100,3300,1000}},
+        {{100,1400,4000,3400,1100}},
+        {{100,1300,3900,3500,1200}},
+        {{100,1200,3800,3600,1300}},
+        {{100,1100,3600,3900,1300}},
+        {{100,1100,3300,4100,1400}},
+        {{100,1000,3200,4200,1500}},
+        {{100,900,3100,4300,1600}},
+        {{100,800,3000,4400,1700}},
+        {{100,800,2700,4600,1800}},
+        {{100,700,2600,4700,1900}},
+        {{100,600,2400,4900,2000}},
+        {{100,600,2200,5000,2100}},
+        {{100,500,2100,5100,2200}},
+        {{100,500,1800,5300,2300}},
+        {{100,400,1700,5400,2400}},
+        {{100,300,1600,5500,2500}},
+        {{100,300,1500,5300,2800}},
+        {{100,200,1500,5200,3000}},
+        {{0,200,1500,5200,3100}},
+        {{0,200,1400,5000,3400}},
+        {{0,200,1300,4800,3700}},
+        {{0,200,1300,4400,4100}},
+        {{0,200,1200,4200,4400}},
+        {{0,200,1200,3800,4800}},
+        {{0,200,1100,3600,5100}},
+        {{0,200,1100,3300,5400}},
+        {{0,200,1000,3000,5800}},
+        {{0,100,1000,2900,6000}},
+        {{0,100,900,2700,6300}},
+        {{0,100,800,2500,6600}},
+        {{0,100,700,2300,6900}},
+        {{0,100,700,1900,7300}},
+        {{0,100,600,1700,7600}},
+        {{0,100,500,1500,7900}},
+        {{0,100,400,1300,8200}},
+        {{0,0,400,1200,8400}},
+        {{0,0,300,1000,8700}},
+        {{0,0,200,800,9000}},
+        {{0,0,200,400,9400}},
+        {{0,0,100,200,9700}},
+        {{0,0,0,0,10000}},
+    };
+    // Inflate up to two decimal places of chance %: add intermediate values
+    SpellPartialResistDistribution inflated;
+    for (size_t index = 0; index < precalculated.size(); ++index)
+    {
+        for (uint8 intermediate = 0; intermediate < 100; ++intermediate)
+        {
+            // Check if this is the last one first
+            if ((index + 1) == precalculated.size())
+            {
+                inflated.push_back(precalculated[index]);
+                break;
+            }
+            SpellPartialResistChanceEntry values;
+            for (uint8 column = SPELL_PARTIAL_RESIST_NONE; column < NUM_SPELL_PARTIAL_RESISTS; ++column)
+            {
+                const uint32 base = precalculated.at(index).at(column);
+                const uint32 next = precalculated.at(index + 1).at(column);
+                values[column] = base + ((next - base) * intermediate / 100);
+            }
+            inflated.push_back(values);
+        }
+    }
+    return inflated;
+}
+
+static const SpellPartialResistDistribution SPELL_PARTIAL_RESIST_DISTRIBUTION = InitSpellPartialResistDistribution();
 
 ////////////////////////////////////////////////////////////
 // Methods of class MovementInfo
@@ -1811,7 +1948,7 @@ void Unit::HandleEmote(uint32 emote_id)
     }
 }
 
-uint32 Unit::CalculateEffectiveMagicResistance(Unit* attacker, SpellSchoolMask schoolMask, bool binary) const
+uint32 Unit::CalculateEffectiveMagicResistance(Unit* attacker, SpellSchoolMask schoolMask) const
 {
     if (!(schoolMask & SPELL_SCHOOL_MASK_MAGIC))
         return 0;
@@ -1839,17 +1976,18 @@ uint32 Unit::CalculateEffectiveMagicResistance(Unit* attacker, SpellSchoolMask s
         }
         schools >>= 1;
     }
-    // Add bonus resistance to victim based on level difference for non-binary spells
-    if (!binary)
-        resistance += uint32(std::max(int32(GetLevelForTarget(attacker)- attacker->GetLevelForTarget(this)), 0)) * 5;
-
     return resistance;
 }
 
-float Unit::CalculateMagicResistanceMitigation(Unit* attacker, uint32 resistance) const
+float Unit::CalculateMagicResistanceMitigation(Unit* attacker, uint32 resistance, bool binary) const
 {
-    // Total resistance mitigation: final ratio of resistance effectiveness (capped at 0.75)
-    return std::min(float(float(resistance) / (attacker->GetLevelForTarget(this) * 5)) * 0.75f, 0.75f);
+    // Total resistance mitigation: final ratio of resistance effectiveness
+    float ratio = float(float(resistance) / (attacker->GetLevelForTarget(this) * 5)) * 0.75f;
+    // Add bonus resistance mitigation to victim based on level difference for non-binary spells
+    if (!binary)
+        ratio += std::max(int32(GetLevelForTarget(attacker) - attacker->GetLevelForTarget(this)), 0) * 0.02f;
+    // Magic resistance mitigation is capped at 0.75
+    return std::min(ratio, 0.75f);
 }
 
 uint32 Unit::CalcArmorReducedDamage(Unit* pVictim, const uint32 damage)
@@ -1877,39 +2015,38 @@ uint32 Unit::CalcArmorReducedDamage(Unit* pVictim, const uint32 damage)
     return (newdamage > 1) ? newdamage : 1;
 }
 
-void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolMask, DamageEffectType damagetype, const uint32 damage, uint32* absorb, uint32* resist, bool canReflect, bool ignoreResists)
+void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, SpellSchoolMask schoolMask, DamageEffectType damagetype, const uint32 damage, uint32* absorb, uint32* resist, bool canReflect, bool ignoreResists, bool binary)
 {
     if (!pCaster || !isAlive() || !damage)
         return;
 
     // Magic damage, check for resists
-    if (!ignoreResists)
+    if (!ignoreResists && (schoolMask & SPELL_SCHOOL_MASK_MAGIC) && (!binary || damagetype == DOT))
     {
-        float tmpvalue2 = CalculateEffectiveMagicResistance(pCaster, schoolMask, false);
-
-        tmpvalue2 *= (float)(0.15f / getLevel());
-        if (tmpvalue2 < 0.0f)
-            tmpvalue2 = 0.0f;
-        if (tmpvalue2 > 0.75f)
-            tmpvalue2 = 0.75f;
-        uint32 ran = urand(0, 100);
-        float faq[4] = {24.0f, 6.0f, 4.0f, 6.0f};
-        uint8 m = 0;
-        float Binom = 0.0f;
-        for (uint8 i = 0; i < 4; ++i)
+        const float mitigation = CalculateMagicResistanceMitigation(pCaster, CalculateEffectiveMagicResistance(pCaster, schoolMask), false);
+        const SpellPartialResistChanceEntry &chances = SPELL_PARTIAL_RESIST_DISTRIBUTION.at(uint32(mitigation * 10000));
+        // We choose which portion of damage is resisted below, none by default
+        uint8 portion = SPELL_PARTIAL_RESIST_NONE;
+        // If we got to this point, we already rolled for full resist on hit
+        // We do a roll between remaining chances
+        const uint8 outcomes = (NUM_SPELL_PARTIAL_RESISTS - 1);
+        const uint32 roll = urand(1, (10000 - chances.at(SPELL_PARTIAL_RESIST_PCT_100)));
+        uint32 sum = 0;
+        for (uint8 outcome = SPELL_PARTIAL_RESIST_NONE; outcome < outcomes; ++outcome)
         {
-            Binom += 2400 * (powf(tmpvalue2, float(i)) * powf((1 - tmpvalue2), float(4 - i))) / faq[i];
-            if (ran > Binom)
-                ++m;
-            else
-                break;
+            if (const uint32 chance = chances.at(outcome))
+            {
+                sum += chance;
+                if (roll <= sum)
+                {
+                    portion = outcome;
+                    break;
+                }
+            }
         }
-        if (damagetype == DOT && m == 4)
-            *resist += uint32(damage - 1);
-        else
-            *resist += uint32(damage * m / 4);
-        if (*resist > damage)
-            *resist = damage;
+        const uint32 amount = uint32(damage * (portion * (1.0f / float(outcomes))));
+        // We already rolled for full resist on hit, so we need to deal at least *some* amount of damage...
+        *resist = (amount >= damage) ? (damage - 1) : amount;
     }
     else
         *resist = 0;
@@ -2124,7 +2261,7 @@ void Unit::CalculateAbsorbResistBlock(Unit* pCaster, SpellNonMeleeDamage* damage
         damageInfo->damage -= damageInfo->blocked;
     }
 
-    CalculateDamageAbsorbAndResist(pCaster, GetSpellSchoolMask(spellProto), SPELL_DIRECT_DAMAGE, damageInfo->damage, &damageInfo->absorb, &damageInfo->resist, IsReflectableSpell(spellProto), spellProto->HasAttribute(SPELL_ATTR_EX4_IGNORE_RESISTANCES));
+    CalculateDamageAbsorbAndResist(pCaster, GetSpellSchoolMask(spellProto), SPELL_DIRECT_DAMAGE, damageInfo->damage, &damageInfo->absorb, &damageInfo->resist, IsReflectableSpell(spellProto), spellProto->HasAttribute(SPELL_ATTR_EX4_IGNORE_RESISTANCES), IsBinarySpell(spellProto));
     damageInfo->damage -= damageInfo->absorb + damageInfo->resist;
 }
 
@@ -2261,7 +2398,6 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* pVictim, WeaponAttackT
     int32 skillBonus  = 4 * (attackerWeaponSkill - victimMaxSkillValueForLevel);
     int32 sum = 0;
     int32 roll = urand(0, 10000);
-    int32 tmp;
 
     DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: skill bonus of %d for attacker", skillBonus);
     DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: rolled %d, miss %d, dodge %d, parry %d, block %d, crit %d",
@@ -2274,10 +2410,10 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* pVictim, WeaponAttackT
 
     if (miss_chance > 0)
     {
-        tmp = miss_chance - skillBonus;
-        if (roll < (sum += tmp))
+        miss_chance -= skillBonus;
+        if (roll < (sum += miss_chance))
         {
-            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: MISS <%d, %d)", sum - tmp, tmp);
+            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: MISS <%d, %d)", sum - miss_chance, miss_chance);
             return MELEE_HIT_MISS;
         }
     }
@@ -2289,77 +2425,94 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* pVictim, WeaponAttackT
         return MELEE_HIT_CRIT;
     }
 
-    if (dodge_chance > 0)
+    // only players can't dodge if attacker is behind
+    if ((pVictim->GetTypeId() != TYPEID_PLAYER || !from_behind) && dodge_chance > 0)
     {
-        tmp = dodge_chance - skillBonus;
-        // only players can't dodge if attacker is behind
-        if (!(from_behind && pVictim->GetTypeId() == TYPEID_PLAYER) && roll < (sum += tmp))
+        dodge_chance -= skillBonus;
+
+        if (dodge_chance > 0 && roll < (sum += dodge_chance))
         {
-            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: DODGE <%d, %d)", sum - tmp, tmp);
+            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: DODGE <%d, %d)", sum - dodge_chance, dodge_chance);
             return MELEE_HIT_DODGE;
         }
     }
 
     // can't parry or block attacks coming from behind
-    if (!from_behind)
+    if (!from_behind && parry_chance > 0)
     {
-        if (parry_chance > 0)
-        {
-            tmp = parry_chance - skillBonus;
-            if (roll < (sum += tmp) && (pVictim->GetTypeId() == TYPEID_PLAYER
-                || !(((Creature*)pVictim)->GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_NO_PARRY)))
-            {
-                DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: PARRY <%d, %d)", sum - tmp, tmp);
-                return MELEE_HIT_PARRY;
-            }
-        }
+        parry_chance -= skillBonus;
 
-        if (block_chance > 0)
+        if (parry_chance > 0 && roll < (sum += parry_chance) && (pVictim->GetTypeId() == TYPEID_PLAYER
+            || !(((Creature*)pVictim)->GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_NO_PARRY)))
         {
-            tmp = block_chance - skillBonus;
-            if (roll < (sum += tmp) && (pVictim->GetTypeId() == TYPEID_PLAYER
-                || !(((Creature*)pVictim)->GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_NO_BLOCK)))
-            {
-                // Critical chance
-                if (GetTypeId() == TYPEID_PLAYER && SpellCasted && roll_chance_i(crit_chance / 100))
-                {
-                    DEBUG_LOG("RollMeleeOutcomeAgainst: BLOCKED CRIT");
-                    return MELEE_HIT_BLOCK_CRIT;
-                }
-                else
-                {
-                    DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: BLOCK <%d, %d)", sum - tmp, tmp);
-                    return MELEE_HIT_BLOCK;
-                }
-            }
+            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: PARRY <%d, %d)", sum - parry_chance, parry_chance);
+            return MELEE_HIT_PARRY;
         }
     }
 
-    // Max 40% chance to score a glancing blow against mobs that are higher level
-    // (can do only players and pets and not with ranged weapon)
-    if ((GetTypeId() == TYPEID_PLAYER || ((Creature*)this)->IsPet())
+    bool attackerIsPlayer = GetTypeId() == TYPEID_PLAYER ? true : false;
+    // You can glance against mobs which are a lower level than you!
+    // Only players and pets can glance, and only with normal melee attacks
+    if ((attackerIsPlayer || ((Creature*)this)->IsPet())
         && pVictim->GetTypeId() != TYPEID_PLAYER && !((Creature*)pVictim)->IsPet()
-        && getLevel() < pVictim->getLevel() && attType != RANGED_ATTACK && !SpellCasted)
+        && attType != RANGED_ATTACK && !SpellCasted)
     {
-        tmp = 1000 + ((attackerWeaponSkill < attackerMaxSkillValueForLevel)
-            ? (victimDefenseSkill - attackerWeaponSkill) * 200
-            : (victimDefenseSkill - attackerMaxSkillValueForLevel) * 200);
-
-        if (roll < (tmp = (tmp > 4000) ? 4000 : tmp))
+        uint32 victimLevel = pVictim->getLevel();
+        if (victimLevel > 10)  // No glancing in starting zones or against critters
         {
-            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: GLANCING <%d, %d)", sum - tmp, tmp);
-            return MELEE_HIT_GLANCING;
+            uint32 attackerLevel = getLevel();
+            uint8 attackerClass = getClass();
+            int32 attackerSkill = (attackerWeaponSkill > attackerMaxSkillValueForLevel) ? attackerMaxSkillValueForLevel : attackerWeaponSkill; // pick whichever is lower
+            int32 glancing_chance = 0;
+
+            // Caster classes suffer differently from glancing in classic and TBC (not as drastically, though)
+            if (attackerIsPlayer && (attackerClass == CLASS_MAGE
+                || attackerClass == CLASS_PRIEST || attackerClass == CLASS_WARLOCK))
+            {
+                if (attackerLevel < 30)
+                    glancing_chance = (attackerLevel * 100) + ((victimDefenseSkill - attackerSkill) * 200);
+                else // Higher base glancing chance resulting in 60% at level 60 vs a level 63
+                    glancing_chance = 3000 + ((victimDefenseSkill - attackerSkill) * 200);
+            }
+            else // Melee classes (non wand users) and pets.
+                glancing_chance = 1000 + ((victimDefenseSkill - attackerSkill) * 200);
+
+            // cap is 60% - The 40% is the 'de facto' percentage for a SKILL CAPPED MAX LEVEL MELEE PLAYER (in classic)
+            glancing_chance = (glancing_chance > 6000) ? 6000 : glancing_chance;
+
+            if (glancing_chance > 0 && roll < (sum += glancing_chance))
+            {
+                DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: GLANCING <%d, %d)", sum - glancing_chance, glancing_chance);
+                return MELEE_HIT_GLANCING;
+            }
         }
     }
 
-    if (crit_chance > 0)
+    if (!from_behind && block_chance > 0)
     {
-        tmp = crit_chance + skillBonus;
-        if (roll < (sum += tmp))
+        block_chance -= skillBonus;
+
+        if (block_chance > 0 && roll < (sum += block_chance) && (pVictim->GetTypeId() == TYPEID_PLAYER
+            || !(((Creature*)pVictim)->GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_NO_BLOCK)))
         {
-            DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: CRIT <%d, %d)", sum - tmp, tmp);
-            return MELEE_HIT_CRIT;
+            // Critical chance
+            if (GetTypeId() == TYPEID_PLAYER && SpellCasted && roll_chance_i(crit_chance / 100))
+            {
+                DEBUG_LOG("RollMeleeOutcomeAgainst: BLOCKED CRIT");
+                return MELEE_HIT_BLOCK_CRIT;
+            }
+            else
+            {
+                DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: BLOCK <%d, %d)", sum - block_chance, block_chance);
+                return MELEE_HIT_BLOCK;
+            }
         }
+    }
+
+    if (crit_chance > 0 && roll < (sum += crit_chance))
+    {
+        DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: CRIT <%d, %d)", sum - crit_chance, crit_chance);
+        return MELEE_HIT_CRIT;
     }
 
     // mobs can score crushing blows if they're 3 or more levels above victim
@@ -2367,15 +2520,16 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst(const Unit* pVictim, WeaponAttackT
     {
         // having defense above your maximum (from items, talents etc.) has no effect
         // mob's level * 5 - player's current defense skill - add 2% chance per lacking skill point, min. is 15%
-        tmp = (victimDefenseSkill < victimMaxSkillValueForLevel) ? victimDefenseSkill : victimMaxSkillValueForLevel;
-        if (roll < (tmp = (((attackerMaxSkillValueForLevel - tmp) * 200) - 1500)))
+        int32 defenderSkill = (victimDefenseSkill < victimMaxSkillValueForLevel) ? victimDefenseSkill : victimMaxSkillValueForLevel; // pick whichever is lower
+        int32 crushing_chance = (((attackerMaxSkillValueForLevel - defenderSkill) * 200) - 1500);
+        if (crushing_chance > 0 && roll < (sum += crushing_chance))
         {
             uint32 typeId = GetTypeId();
             if ((typeId == TYPEID_UNIT && !(GetOwnerGuid() && GetOwner()->GetTypeId() == TYPEID_PLAYER)
                 && !(((Creature*)this)->GetCreatureInfo()->ExtraFlags & CREATURE_EXTRA_FLAG_NO_CRUSH))
                 || (typeId == TYPEID_PLAYER && GetCharmerGuid() && GetCharmer()->GetTypeId() == TYPEID_UNIT))
             {
-                DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: CRUSHING %d)", tmp);
+                DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: CRUSHING %d)", crushing_chance);
                 return MELEE_HIT_CRUSHING;
             }
         }
@@ -2688,9 +2842,9 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit* pVictim, SpellEntry const* spell)
     if (!spell->HasAttribute(SPELL_ATTR_EX4_IGNORE_RESISTANCES))
     {
         const bool binary = IsBinarySpell(spell);
-        const float mitigation = pVictim->CalculateMagicResistanceMitigation(this, pVictim->CalculateEffectiveMagicResistance(this, schoolMask, binary));
+        const float mitigation = pVictim->CalculateMagicResistanceMitigation(this, pVictim->CalculateEffectiveMagicResistance(this, schoolMask), binary);
         // Calculate full resist chance
-        const uint32 chance = binary ? uint32(mitigation * 10000) : /* FIXME: nonbinary full resist chance */ 0;
+        const uint32 chance = binary ? uint32(mitigation * 10000) : SPELL_PARTIAL_RESIST_DISTRIBUTION.at(uint32(mitigation * 10000)).at(SPELL_PARTIAL_RESIST_PCT_100);
         // Do a roll for full resist chance
         if (urand(0,9999) < chance)
             return SPELL_MISS_RESIST;
@@ -9130,6 +9284,9 @@ void Unit::SetPvP(bool state)
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
     else
         RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP);
+
+    if (GetTypeId() == TYPEID_PLAYER && ((Player*)this)->GetGroup())
+        ((Player*)this)->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 
     CallForAllControlledUnits(SetPvPHelper(state), CONTROLLED_PET | CONTROLLED_TOTEMS | CONTROLLED_GUARDIANS | CONTROLLED_CHARM);
 }

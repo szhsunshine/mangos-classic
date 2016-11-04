@@ -663,6 +663,8 @@ void World::LoadConfigSettings(bool reload)
 
     setConfig(CONFIG_UINT32_INSTANT_LOGOUT, "InstantLogout", SEC_MODERATOR);
 
+    setConfigMin(CONFIG_UINT32_GROUP_OFFLINE_LEADER_DELAY, "Group.OfflineLeaderDelay", 300, 0);
+
     setConfigMin(CONFIG_UINT32_GUILD_EVENT_LOG_COUNT, "Guild.EventLogRecordsCount", GUILD_EVENTLOG_MAX_RECORDS, GUILD_EVENTLOG_MAX_RECORDS);
 
     setConfig(CONFIG_UINT32_TIMERBAR_FATIGUE_GMLEVEL, "TimerBar.Fatigue.GMLevel", SEC_CONSOLE);
@@ -1203,6 +1205,9 @@ void World::SetInitialWorldSettings()
     // for AhBot
     m_timers[WUPDATE_AHBOT].SetInterval(20 * IN_MILLISECONDS); // every 20 sec
 
+    // Update groups with offline leader after delay in seconds
+    m_timers[WUPDATE_GROUPS].SetInterval(IN_MILLISECONDS);
+
     // to set mailtimer to return mails every day between 4 and 5 am
     // mailtimer is increased when updating auctions
     // one second is 1000 -(tested on win system)
@@ -1374,6 +1379,17 @@ void World::Update(uint32 diff)
     sMapMgr.Update(diff);
     sBattleGroundMgr.Update(diff);
     sOutdoorPvPMgr.Update(diff);
+
+    ///- Update groups with offline leaders
+    if (m_timers[WUPDATE_GROUPS].Passed())
+    {
+        m_timers[WUPDATE_GROUPS].Reset();
+        if (const uint32 delay = getConfig(CONFIG_UINT32_GROUP_OFFLINE_LEADER_DELAY))
+        {
+            for (ObjectMgr::GroupMap::const_iterator i = sObjectMgr.GetGroupMapBegin(); i != sObjectMgr.GetGroupMapEnd(); ++i)
+                i->second->UpdateOfflineLeader(m_gameTime, delay);
+        }
+    }
 
     ///- Delete all characters which have been deleted X days before
     if (m_timers[WUPDATE_DELETECHARS].Passed())
@@ -1769,27 +1785,28 @@ void World::UpdateSessions(uint32 /*diff*/)
     {
         std::lock_guard<std::mutex> guard(m_sessionAddQueueLock);
 
-        std::for_each(m_sessionAddQueue.begin(), m_sessionAddQueue.end(), [&](WorldSession *session) { AddSession_(session); });
+        for (auto const &session : m_sessionAddQueue)
+            AddSession_(session);
 
         m_sessionAddQueue.clear();
     }
 
     ///- Then send an update signal to remaining ones
-    for (SessionMap::iterator itr = m_sessions.begin(), next; itr != m_sessions.end(); itr = next)
+    for (SessionMap::iterator itr = m_sessions.begin(); itr != m_sessions.end(); )
     {
-        next = itr;
-        ++next;
         ///- and remove not active sessions from the list
         WorldSession* pSession = itr->second;
         WorldSessionFilter updater(pSession);
 
-        // the session itself is owned by the socket which created it.  that is where the destruction of the session will happen.
+        // if WorldSession::Update fails, it means that the session should be destroyed
         if (!pSession->Update(updater))
         {
             RemoveQueuedSession(pSession);
-            m_sessions.erase(itr);
-            pSession->Finalize();
+            itr = m_sessions.erase(itr);
+            delete pSession;
         }
+        else
+            ++itr;
     }
 }
 

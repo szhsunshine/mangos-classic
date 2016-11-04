@@ -4006,14 +4006,15 @@ void Aura::HandleAuraGhost(bool apply, bool /*Real*/)
     if (GetTarget()->GetTypeId() != TYPEID_PLAYER)
         return;
 
+    Player* player = (Player*)GetTarget();
+
     if (apply)
-    {
-        GetTarget()->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
-    }
+        player->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
     else
-    {
-        GetTarget()->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
-    }
+        player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST);
+
+    if (player->GetGroup())
+        player->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_STATUS);
 }
 
 void Aura::HandleShieldBlockValue(bool apply, bool /*Real*/)

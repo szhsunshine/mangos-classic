@@ -40,7 +40,7 @@
 
 #include <mutex>
 #include <deque>
-#include <algorithm>
+#include <memory>
 #include <cstdarg>
 
 // select opcodes appropriate for processing in Map::Update context for current session state
@@ -98,9 +98,9 @@ WorldSession::~WorldSession()
     if (_player)
         LogoutPlayer(true);
 
-    ///- empty incoming packet queue
-    for (auto const packet : m_recvQueue)
-        delete packet;
+    // marks this session as finalized in the socket which references (BUT DOES NOT OWN) it.
+    // this lets the socket handling code know that the socket can be safely deleted
+    m_Socket->ClearSession();
 }
 
 void WorldSession::SizeError(WorldPacket const& packet, uint32 size) const
@@ -161,28 +161,28 @@ void WorldSession::SendPacket(WorldPacket const* packet)
 }
 
 /// Add an incoming packet to the queue
-void WorldSession::QueuePacket(WorldPacket* new_packet)
+void WorldSession::QueuePacket(std::unique_ptr<WorldPacket> new_packet)
 {
     std::lock_guard<std::mutex> guard(m_recvQueueLock);
-    m_recvQueue.push_back(new_packet);
+    m_recvQueue.push_back(std::move(new_packet));
 }
 
 /// Logging helper for unexpected opcodes
-void WorldSession::LogUnexpectedOpcode(WorldPacket* packet, const char* reason)
+void WorldSession::LogUnexpectedOpcode(WorldPacket const& packet, const char* reason)
 {
     sLog.outError("SESSION: received unexpected opcode %s (0x%.4X) %s",
-                  packet->GetOpcodeName(),
-                  packet->GetOpcode(),
+                  packet.GetOpcodeName(),
+                  packet.GetOpcode(),
                   reason);
 }
 
 /// Logging helper for unexpected opcodes
-void WorldSession::LogUnprocessedTail(WorldPacket* packet)
+void WorldSession::LogUnprocessedTail(WorldPacket const& packet)
 {
     sLog.outError("SESSION: opcode %s (0x%.4X) have unprocessed tail data (read stop at " SIZEFMTD " from " SIZEFMTD ")",
-                  packet->GetOpcodeName(),
-                  packet->GetOpcode(),
-                  packet->rpos(), packet->wpos());
+                  packet.GetOpcodeName(),
+                  packet.GetOpcode(),
+                  packet.rpos(), packet.wpos());
 }
 
 /// Update the WorldSession (triggered by World update)
@@ -194,7 +194,7 @@ bool WorldSession::Update(PacketFilter& updater)
     /// not process packets if socket already closed
     while (m_Socket && !m_Socket->IsClosed() && !m_recvQueue.empty())
     {
-        WorldPacket *packet = m_recvQueue.front();
+        auto const packet = std::move(m_recvQueue.front());
         m_recvQueue.pop_front();
 
         /*#if 1
@@ -213,35 +213,35 @@ bool WorldSession::Update(PacketFilter& updater)
                     {
                         // skip STATUS_LOGGEDIN opcode unexpected errors if player logout sometime ago - this can be network lag delayed packets
                         if (!m_playerRecentlyLogout)
-                            LogUnexpectedOpcode(packet, "the player has not logged in yet");
+                            LogUnexpectedOpcode(*packet, "the player has not logged in yet");
                     }
                     else if (_player->IsInWorld())
-                        ExecuteOpcode(opHandle, packet);
+                        ExecuteOpcode(opHandle, *packet);
 
                     // lag can cause STATUS_LOGGEDIN opcodes to arrive after the player started a transfer
                     break;
                 case STATUS_LOGGEDIN_OR_RECENTLY_LOGGEDOUT:
                     if (!_player && !m_playerRecentlyLogout)
                     {
-                        LogUnexpectedOpcode(packet, "the player has not logged in yet and not recently logout");
+                        LogUnexpectedOpcode(*packet, "the player has not logged in yet and not recently logout");
                     }
                     else
                         // not expected _player or must checked in packet hanlder
-                        ExecuteOpcode(opHandle, packet);
+                        ExecuteOpcode(opHandle, *packet);
                     break;
                 case STATUS_TRANSFER:
                     if (!_player)
-                        LogUnexpectedOpcode(packet, "the player has not logged in yet");
+                        LogUnexpectedOpcode(*packet, "the player has not logged in yet");
                     else if (_player->IsInWorld())
-                        LogUnexpectedOpcode(packet, "the player is still in world");
+                        LogUnexpectedOpcode(*packet, "the player is still in world");
                     else
-                        ExecuteOpcode(opHandle, packet);
+                        ExecuteOpcode(opHandle, *packet);
                     break;
                 case STATUS_AUTHED:
                     // prevent cheating with skip queue wait
                     if (m_inQueue)
                     {
-                        LogUnexpectedOpcode(packet, "the player not pass queue yet");
+                        LogUnexpectedOpcode(*packet, "the player not pass queue yet");
                         break;
                     }
 
@@ -249,7 +249,7 @@ bool WorldSession::Update(PacketFilter& updater)
                     // and before other STATUS_LOGGEDIN_OR_RECENTLY_LOGGOUT opcodes.
                     m_playerRecentlyLogout = false;
 
-                    ExecuteOpcode(opHandle, packet);
+                    ExecuteOpcode(opHandle, *packet);
                     break;
                 case STATUS_NEVER:
                     sLog.outError("SESSION: received not allowed opcode %s (0x%.4X)",
@@ -286,8 +286,6 @@ bool WorldSession::Update(PacketFilter& updater)
                 KickPlayer();
             }
         }
-
-        delete packet;
     }
 
     // check if we are safe to proceed with logout
@@ -449,8 +447,8 @@ void WorldSession::LogoutPlayer(bool save)
             _player->RemoveFromGroup();
 
         ///- Send update to group
-        if (_player->GetGroup())
-            _player->GetGroup()->SendUpdate();
+        if (Group* group = _player->GetGroup())
+            group->UpdatePlayerOnlineStatus(_player, false);
 
         ///- Broadcast a logout message to the player's friends
         sSocialMgr.SendFriendStatus(_player, FRIEND_OFFLINE, _player->GetObjectGuid(), true);
@@ -687,14 +685,14 @@ void WorldSession::SendTransferAborted(uint32 mapid, uint8 reason, uint8 arg)
     SendPacket(&data);
 }
 
-void WorldSession::ExecuteOpcode(OpcodeHandler const& opHandle, WorldPacket* packet)
+void WorldSession::ExecuteOpcode(OpcodeHandler const& opHandle, WorldPacket &packet)
 {
     // need prevent do internal far teleports in handlers because some handlers do lot steps
     // or call code that can do far teleports in some conditions unexpectedly for generic way work code
     if (_player)
         _player->SetCanDelayTeleport(true);
 
-    (this->*opHandle.handler)(*packet);
+    (this->*opHandle.handler)(packet);
 
     if (_player)
     {
@@ -707,7 +705,7 @@ void WorldSession::ExecuteOpcode(OpcodeHandler const& opHandle, WorldPacket* pac
             _player->TeleportTo(_player->m_teleport_dest, _player->m_teleport_options);
     }
 
-    if (packet->rpos() < packet->wpos() && sLog.HasLogLevelOrHigher(LOG_LVL_DEBUG))
+    if (packet.rpos() < packet.wpos() && sLog.HasLogLevelOrHigher(LOG_LVL_DEBUG))
         LogUnprocessedTail(packet);
 }
 
