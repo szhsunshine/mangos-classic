@@ -2705,7 +2705,7 @@ void Spell::cast(bool skipCheck)
         case SPELLFAMILY_ROGUE:
         {
             // exit stealth on sap when improved sap is not skilled
-            if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x00000080) && m_caster->GetTypeId() == TYPEID_PLAYER &&
+            if (m_spellInfo->SpellFamilyFlags & uint64(0x00000080) && m_caster->GetTypeId() == TYPEID_PLAYER &&
                 (!m_caster->GetAura(14076,SpellEffectIndex(0)) &&
                     !m_caster->GetAura(14094,SpellEffectIndex(0)) &&
                     !m_caster->GetAura(14095,SpellEffectIndex(0))))
