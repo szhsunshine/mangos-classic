@@ -2182,8 +2182,8 @@ bool ChatHandler::HandleAddItemCommand(char* args)
     }
 
     // check add item limit
-    uint32 add_item_level_max = sWorld.getConfig(CONFIG_UNIT32_COMMAND_ADD_ITEM_LEVEL_MAX);
-    uint32 add_item_quality_max = sWorld.getConfig(CONFIG_UNIT32_COMMAND_ADD_ITEM_QUALITY_MAX);
+    uint32 add_item_level_max = sWorld.getConfig(CONFIG_UINT32_COMMAND_ADD_ITEM_LEVEL_MAX);
+    uint32 add_item_quality_max = sWorld.getConfig(CONFIG_UINT32_COMMAND_ADD_ITEM_QUALITY_MAX);
     if ((add_item_level_max > 0 && add_item_level_max < pProto->ItemLevel) ||
         (add_item_quality_max > 0 && add_item_quality_max < pProto->Quality))
     {

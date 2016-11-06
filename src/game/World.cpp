@@ -790,8 +790,8 @@ void World::LoadConfigSettings(bool reload)
     sLog.outString("WORLD: MMap pathfinding %sabled", getConfig(CONFIG_BOOL_MMAP_ENABLED) ? "en" : "dis");
 
     // limit add item
-    setConfig(CONFIG_UNIT32_COMMAND_ADD_ITEM_LEVEL_MAX, "command.additem.level.max", 0);
-    setConfig(CONFIG_UNIT32_COMMAND_ADD_ITEM_QUALITY_MAX, "command.additem.quality.max", 0);
+    setConfig(CONFIG_UINT32_COMMAND_ADD_ITEM_LEVEL_MAX, "command.additem.level.max", 0);
+    setConfig(CONFIG_UINT32_COMMAND_ADD_ITEM_QUALITY_MAX, "command.additem.quality.max", 0);
 
     sLog.outString();
 }
