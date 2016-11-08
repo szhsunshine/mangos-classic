@@ -69,7 +69,8 @@ struct boss_jindoAI : public ScriptedAI
     void Reset() override
     {
         m_uiBrainWashTotemTimer     = 20000;
-        m_uiHealingWardTimer        = 16000;
+        //m_uiHealingWardTimer        = 16000;
+        m_uiHealingWardTimer        = 600000;
         m_uiHexTimer                = 8000;
         m_uiDelusionsTimer          = 10000;
         m_uiTeleportTimer           = 5000;
@@ -83,7 +84,8 @@ struct boss_jindoAI : public ScriptedAI
     void SummonedCreatureJustDied(Creature* pSummoned) override
     {
         if (pSummoned->GetEntry() == NPC_POWERFULL_HEALING_WARD)
-            m_uiHealingWardTimer = 15000;                   // how long delay?
+            //m_uiHealingWardTimer = 15000;                   // how long delay?
+            m_uiHealingWardTimer = 600000;
     }
 
     void UpdateAI(const uint32 uiDiff) override
@@ -177,7 +179,8 @@ struct mob_healing_wardAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiHealTimer = 3000;                               // Timer unknown, sources go over 1s, per tick to 3s, keep 3s as in original script
+        //m_uiHealTimer = 3000;                               // Timer unknown, sources go over 1s, per tick to 3s, keep 3s as in original script
+        m_uiHealTimer = 600000; 
     }
 
     void AttackStart(Unit* /*pWho*/) override {}
@@ -189,7 +192,8 @@ struct mob_healing_wardAI : public ScriptedAI
         if (m_uiHealTimer < uiDiff)
         {
             DoCastSpellIfCan(m_creature, SPELL_HEALING_WARD_HEAL);
-            m_uiHealTimer = 3000;
+            //m_uiHealTimer = 3000;
+            m_uiHealTimer = 600000;
         }
         else
             m_uiHealTimer -= uiDiff;
