@@ -2556,8 +2556,9 @@ void Spell::Prepare()
     ReSetTimer();
 
     if (!m_IsTriggeredSpell)
-        if (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && 
-              (m_spellInfo->SpellFamilyFlags & uint64(0x00000080) || m_spellInfo->SpellFamilyFlags & 2147483648)))
+        if (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
+            (m_spellInfo->SpellFamilyFlags & uint64(0x00000080) ||
+                m_spellInfo->SpellFamilyFlags & 2147483648)))
             m_caster->RemoveAurasOnCast(m_spellInfo);
 
     // add non-triggered (with cast time and without)
