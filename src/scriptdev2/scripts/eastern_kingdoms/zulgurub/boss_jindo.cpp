@@ -108,7 +108,8 @@ struct boss_jindoAI : public ScriptedAI
             if (m_uiHealingWardTimer <= uiDiff)
             {
                 if (DoCastSpellIfCan(m_creature, SPELL_POWERFULL_HEALING_WARD) == CAST_OK)
-                    m_uiHealingWardTimer = 0;
+                    //m_uiHealingWardTimer = 0;
+                    m_uiHealingWardTimer = 600000;
             }
             else
                 m_uiHealingWardTimer -= uiDiff;
