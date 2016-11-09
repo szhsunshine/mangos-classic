@@ -1813,10 +1813,10 @@ void World::UpdateSessions(uint32 /*diff*/)
 void World::ServerMaintenanceStart()
 {
     uint32 LastWeekEnd    = GetDateLastMaintenanceDay();
-    m_NextMaintenanceDate   = LastWeekEnd + 7; // next maintenance begin
+    m_NextMaintenanceDate   = GetDateToday() + 1; // next maintenance begin
 
-    if (m_NextMaintenanceDate <= GetDateToday())            // avoid loop in manually case, maybe useless
-        m_NextMaintenanceDate += 7;
+    // if (m_NextMaintenanceDate <= GetDateToday())            // avoid loop in manually case, maybe useless
+    //     m_NextMaintenanceDate += 7;
 
     // flushing rank points list ( standing must be reloaded after server maintenance )
     sObjectMgr.FlushRankPoints(LastWeekEnd);
@@ -1835,8 +1835,8 @@ void World::InitServerMaintenanceCheck()
     if (!result)
     {
         DEBUG_LOG("Maintenance date not found in SavedVariables, reseting it now.");
-        uint32 mDate = GetDateLastMaintenanceDay();
-        m_NextMaintenanceDate = mDate == GetDateToday() ?  mDate : mDate + 7;
+        // uint32 mDate = GetDateLastMaintenanceDay();
+        m_NextMaintenanceDate = GetDateToday() + 1;
         CharacterDatabase.PExecute("INSERT INTO saved_variables (NextMaintenanceDate) VALUES ('" UI64FMTD "')", uint64(m_NextMaintenanceDate));
     }
     else
