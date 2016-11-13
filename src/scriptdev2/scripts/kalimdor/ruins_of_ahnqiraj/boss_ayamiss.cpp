@@ -84,7 +84,8 @@ struct boss_ayamissAI : public ScriptedAI
         m_uiPoisonStingerTimer  = 5000;
         m_uiSummonSwarmerTimer  = 5000;
         m_uiSwarmerAttackTimer  = 60000;
-        m_uiParalyzeTimer       = 15000;
+//         m_uiParalyzeTimer       = 15000;
+        m_uiParalyzeTimer       = 600000;
         m_uiLashTimer           = urand(5000, 8000);
         m_uiTrashTimer          = urand(3000, 6000);
 
@@ -161,7 +162,8 @@ struct boss_ayamissAI : public ScriptedAI
             if (DoCastSpellIfCan(pTarget, SPELL_PARALYZE) == CAST_OK)
             {
                 m_paralyzeTarget = pTarget->GetObjectGuid();
-                m_uiParalyzeTimer = 15000;
+//                 m_uiParalyzeTimer = 15000;
+                m_uiParalyzeTimer = 600000;
 
                 // Summon a larva
                 uint8 uiLoc = urand(0, 1);
@@ -208,7 +210,8 @@ struct boss_ayamissAI : public ScriptedAI
         if (m_uiPhase == PHASE_AIR)
         {
             // Start ground phase at 70% of HP
-            if (m_creature->GetHealthPercent() <= 70.0f)
+//             if (m_creature->GetHealthPercent() <= 70.0f)
+            if (m_creature->GetHealthPercent() <= 90.0f)
             {
                 m_uiPhase = PHASE_GROUND;
                 SetCombatMovement(true);
