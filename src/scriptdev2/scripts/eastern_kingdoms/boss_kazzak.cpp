@@ -44,7 +44,7 @@ enum
     SPELL_THUNDERCLAP         = 26554,
     SPELL_VOIDBOLT            = 21066,
     SPELL_MARK_OF_KAZZAK      = 21056,                  // triggers 21058 when target gets to 0 mana
-    SPELL_CAPTURESOUL         = 21053,                  // procs 21054 on kill
+//     SPELL_CAPTURESOUL         = 21053,                  // procs 21054 on kill
     SPELL_TWISTEDREFLECTION   = 21063
 };
 
@@ -66,9 +66,12 @@ struct boss_kazzakAI : public ScriptedAI
         m_uiCleaveTimer             = 7000;
         m_uiThunderClapTimer        = urand(16000, 20000);
         m_uiVoidBoltTimer           = 30000;
-        m_uiMarkOfKazzakTimer       = 25000;
-        m_uiTwistedReflectionTimer  = 33000;
-        m_uiSupremeTimer            = 3 * MINUTE * IN_MILLISECONDS;
+//         m_uiMarkOfKazzakTimer       = 25000;
+//         m_uiTwistedReflectionTimer  = 33000;
+//         m_uiSupremeTimer            = 3 * MINUTE * IN_MILLISECONDS;
+        m_uiMarkOfKazzakTimer       = 600000;
+        m_uiTwistedReflectionTimer  = 600000;
+        m_uiSupremeTimer            = 10 * MINUTE * IN_MILLISECONDS;
     }
 
     void JustRespawned() override
@@ -78,7 +81,7 @@ struct boss_kazzakAI : public ScriptedAI
 
     void Aggro(Unit* /*pWho*/) override
     {
-        DoCastSpellIfCan(m_creature, SPELL_CAPTURESOUL, CAST_TRIGGERED);
+//         DoCastSpellIfCan(m_creature, SPELL_CAPTURESOUL, CAST_TRIGGERED);
         DoScriptText(urand(0, 1) ? SAY_AGGRO1 : SAY_AGGRO2, m_creature);
     }
 
@@ -158,7 +161,8 @@ struct boss_kazzakAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, SPELL_MARK_OF_KAZZAK, SELECT_FLAG_POWER_MANA))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_MARK_OF_KAZZAK) == CAST_OK)
-                    m_uiMarkOfKazzakTimer = 20000;
+//                     m_uiMarkOfKazzakTimer = 20000;
+                    m_uiMarkOfKazzakTimer = 600000;
             }
         }
         else
@@ -169,7 +173,8 @@ struct boss_kazzakAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_TWISTEDREFLECTION) == CAST_OK)
-                    m_uiTwistedReflectionTimer = 15000;
+//                     m_uiTwistedReflectionTimer = 15000;
+                    m_uiTwistedReflectionTimer = 600000;
             }
         }
         else
