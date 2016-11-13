@@ -64,8 +64,10 @@ struct boss_emerald_dragonAI : public ScriptedAI
     {
         m_uiEventCounter = 1;
 
-        m_uiSeepingFogTimer = urand(15000, 20000);
-        m_uiNoxiousBreathTimer = 8000;
+//         m_uiSeepingFogTimer = urand(15000, 20000);
+        m_uiSeepingFogTimer = urand(590000, 600000);
+//         m_uiNoxiousBreathTimer = 8000;
+        m_uiNoxiousBreathTimer = 600000;
         m_uiTailsweepTimer = 4000;
     }
 
@@ -116,7 +118,8 @@ struct boss_emerald_dragonAI : public ScriptedAI
         {
             DoCastSpellIfCan(m_creature, SPELL_SEEPING_FOG_R, CAST_TRIGGERED);
             DoCastSpellIfCan(m_creature, SPELL_SEEPING_FOG_L, CAST_TRIGGERED);
-            m_uiSeepingFogTimer = urand(120000, 150000);    // Rather Guesswork, but one Fog has 2min duration, hence a bit longer
+//             m_uiSeepingFogTimer = urand(120000, 150000);    // Rather Guesswork, but one Fog has 2min duration, hence a bit longer
+            m_uiSeepingFogTimer = urand(5900000, 6000000); 
         }
         else
             m_uiSeepingFogTimer -= uiDiff;
@@ -124,7 +127,8 @@ struct boss_emerald_dragonAI : public ScriptedAI
         if (m_uiNoxiousBreathTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_NOXIOUS_BREATH) == CAST_OK)
-                m_uiNoxiousBreathTimer = urand(14000, 20000);
+//                 m_uiNoxiousBreathTimer = urand(14000, 20000);
+                m_uiNoxiousBreathTimer = urand(590000, 600000);
         }
         else
             m_uiNoxiousBreathTimer -= uiDiff;
@@ -165,7 +169,8 @@ struct boss_emerissAI : public boss_emerald_dragonAI
     {
         boss_emerald_dragonAI::Reset();
 
-        m_uiVolatileInfectionTimer = 12000;
+//         m_uiVolatileInfectionTimer = 12000;
+        m_uiVolatileInfectionTimer = 600000;
     }
 
     void Aggro(Unit* /*pWho*/) override
@@ -203,7 +208,8 @@ struct boss_emerissAI : public boss_emerald_dragonAI
         {
             Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
             if (pTarget && DoCastSpellIfCan(pTarget, SPELL_VOLATILE_INFECTION) == CAST_OK)
-                m_uiVolatileInfectionTimer = urand(7000, 12000);
+//                 m_uiVolatileInfectionTimer = urand(7000, 12000);
+                m_uiVolatileInfectionTimer = urand(590000, 600000);
         }
         else
             m_uiVolatileInfectionTimer -= uiDiff;
@@ -356,8 +362,10 @@ struct boss_taerarAI : public boss_emerald_dragonAI
     {
         boss_emerald_dragonAI::Reset();
 
-        m_uiArcaneBlastTimer = 12000;
-        m_uiBellowingRoarTimer = 30000;
+//         m_uiArcaneBlastTimer = 12000;
+        m_uiArcaneBlastTimer = 600000;
+//         m_uiBellowingRoarTimer = 30000;
+        m_uiBellowingRoarTimer = 600000;
         m_uiShadesTimeoutTimer = 0;                         // The time that Taerar is banished
         m_uiShadesDead = 0;
 
@@ -433,7 +441,8 @@ struct boss_taerarAI : public boss_emerald_dragonAI
         {
             Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
             if (pTarget && DoCastSpellIfCan(pTarget, SPELL_ARCANE_BLAST) == CAST_OK)
-                m_uiArcaneBlastTimer = urand(7000, 12000);
+//                 m_uiArcaneBlastTimer = urand(7000, 12000);
+                m_uiArcaneBlastTimer = urand(590000, 600000);
         }
         else
             m_uiArcaneBlastTimer -= uiDiff;
@@ -442,7 +451,8 @@ struct boss_taerarAI : public boss_emerald_dragonAI
         if (m_uiBellowingRoarTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_BELLOWING_ROAR) == CAST_OK)
-                m_uiBellowingRoarTimer = urand(20000, 30000);
+//                 m_uiBellowingRoarTimer = urand(20000, 30000);
+                m_uiBellowingRoarTimer = urand(590000, 600000);
         }
         else
             m_uiBellowingRoarTimer -= uiDiff;
@@ -483,7 +493,8 @@ struct boss_ysondreAI : public boss_emerald_dragonAI
     {
         boss_emerald_dragonAI::Reset();
 
-        m_uiLightningWaveTimer = 12000;
+//         m_uiLightningWaveTimer = 12000;
+        m_uiLightningWaveTimer = 600000;
     }
 
     void Aggro(Unit* /*pWho*/) override
@@ -509,7 +520,8 @@ struct boss_ysondreAI : public boss_emerald_dragonAI
         {
             Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
             if (pTarget && DoCastSpellIfCan(pTarget, SPELL_LIGHTNING_WAVE) == CAST_OK)
-                m_uiLightningWaveTimer = urand(7000, 12000);
+//                 m_uiLightningWaveTimer = urand(7000, 12000);
+                m_uiLightningWaveTimer = urand(590000, 600000);
         }
         else
             m_uiLightningWaveTimer -= uiDiff;
