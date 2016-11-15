@@ -754,11 +754,18 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
         while (instance_map);
 
         // corpse not in dungeon or some linked deep dungeons
-        if (!instance_map && corpseMapId != 469)
+        if (!instance_map)
         {
-            player->GetSession()->SendAreaTriggerMessage("You cannot enter %s while in a ghost mode",
-                    targetMapEntry->name[player->GetSession()->GetSessionDbcLocale()]);
-            return;
+            if (corpseMapId && corpseMapId == 469)
+            {
+                // allow ghost to enter bwl
+            }
+            else
+            {
+                player->GetSession()->SendAreaTriggerMessage("You cannot enter %s while in a ghost mode",
+                        targetMapEntry->name[player->GetSession()->GetSessionDbcLocale()]);
+                return;
+            }
         }
 
         // need find areatrigger to inner dungeon for landing point
