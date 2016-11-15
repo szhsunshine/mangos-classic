@@ -754,7 +754,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recv_data)
         while (instance_map);
 
         // corpse not in dungeon or some linked deep dungeons
-        if (!instance_map)
+        if (!instance_map && corpseMapId != 469)
         {
             player->GetSession()->SendAreaTriggerMessage("You cannot enter %s while in a ghost mode",
                     targetMapEntry->name[player->GetSession()->GetSessionDbcLocale()]);
