@@ -16469,8 +16469,21 @@ bool Player::BuyItemFromVendor(ObjectGuid vendorGuid, uint32 item, uint8 count, 
 
     if (uint32(GetReputationRank(reqFaction)) < pProto->RequiredReputationRank)
     {
-        SendBuyError(BUY_ERR_REPUTATION_REQUIRE, pCreature, item, 0);
-        return false;
+        if (reqFaction == 730 &&
+            uint32(GetReputationRank(729)) >= pProto->RequiredReputationRank) // Frostwolf Clan
+        {
+//             return true;
+        }
+        else if (reqFaction == 890 &&
+            uint32(GetReputationRank(889)) >= pProto->RequiredReputationRank) // Warsong Outriders
+        {
+//             return true;
+        }
+        else
+        {
+            SendBuyError(BUY_ERR_REPUTATION_REQUIRE, pCreature, item, 0);
+            return false;
+        }
     }
 
     // not check level requiremnt for normal items (PvP related bonus items is another case)
