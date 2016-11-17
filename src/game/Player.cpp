@@ -9197,8 +9197,16 @@ InventoryResult Player::CanUseItem(Item* pItem, bool direct_action) const
             }
 
             if (pProto->RequiredReputationFaction && uint32(GetReputationRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank)
+            {
+                if (pProto->RequiredReputationFaction == 730 &&
+                    uint32(GetReputationRank(729)) >= pProto->RequiredReputationRank) // Frostwolf Clan
+                    return EQUIP_ERR_OK;
+                if (pProto->RequiredReputationFaction == 890 &&
+                    uint32(GetReputationRank(889)) >= pProto->RequiredReputationRank) // Warsong Outriders
+                    return EQUIP_ERR_OK;
+                    
                 return EQUIP_ERR_CANT_EQUIP_REPUTATION;
-
+            }
             return EQUIP_ERR_OK;
         }
     }
