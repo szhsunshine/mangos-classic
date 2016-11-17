@@ -119,8 +119,8 @@ struct boss_razorgoreAI : public ScriptedAI
     void JustSummoned(Creature* pSummoned) override
     {
         // Defenders should attack the players and the boss
-        pSummoned->SetInCombatWithZone();
-        pSummoned->AI()->AttackStart(m_creature);
+//         pSummoned->SetInCombatWithZone();
+//         pSummoned->AI()->AttackStart(m_creature);
     }
 
     void UpdateAI(const uint32 uiDiff) override
