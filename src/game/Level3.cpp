@@ -2110,6 +2110,11 @@ bool ChatHandler::HandleLearnCommand(char* args)
     if (!spell || !sSpellStore.LookupEntry(spell))
         return false;
 
+    if(!isAllowSpellIdToLearn(spell))
+    {
+        return false;
+    }
+
     bool allRanks = ExtractLiteralArg(&args, "all") != nullptr;
     if (!allRanks && *args)                                 // can be fail also at syntax error
         return false;

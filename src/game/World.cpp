@@ -460,6 +460,16 @@ void World::LoadConfigSettings(bool reload)
             m_configForceLoadMapIds.insert(id);
     }
 
+    std::string allowSpellIdsToLearn = sConfig.GetStringDefault("command.learn.allow.spellids");
+    if (!allowSpellIdsToLearn.empty())
+    {
+        unsigned int pos = 0;
+        unsigned int id;
+        VMAP::VMapFactory::chompAndTrim(allowSpellIdsToLearn);
+        while (VMAP::VMapFactory::getNextId(allowSpellIdsToLearn, pos, id))
+            m_configAllowSpellIdsToLearn.insert(id);
+    }
+
     setConfig(CONFIG_UINT32_INTERVAL_SAVE, "PlayerSave.Interval", 15 * MINUTE * IN_MILLISECONDS);
     setConfigMinMax(CONFIG_UINT32_MIN_LEVEL_STAT_SAVE, "PlayerSave.Stats.MinLevel", 0, 0, MAX_LEVEL);
     setConfig(CONFIG_BOOL_STATS_SAVE_ONLY_ON_LOGOUT, "PlayerSave.Stats.SaveOnlyOnLogout", true);
