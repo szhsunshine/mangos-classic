@@ -2110,7 +2110,7 @@ bool ChatHandler::HandleLearnCommand(char* args)
     if (!spell || !sSpellStore.LookupEntry(spell))
         return false;
 
-    if(!isAllowSpellIdToLearn(spell))
+    if(!sWorld.isAllowSpellIdToLearn(spell))
     {
         return false;
     }
