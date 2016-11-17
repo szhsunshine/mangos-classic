@@ -289,7 +289,8 @@ void instance_blackwing_lair::OnCreatureEnterCombat(Creature* pCreature)
     if (pCreature->GetEntry() == NPC_GRETHOK_CONTROLLER)
     {
         SetData(TYPE_RAZORGORE, IN_PROGRESS);
-        m_uiDefenseTimer = 40000;
+//         m_uiDefenseTimer = 40000;
+        m_uiDefenseTimer = 600000;
     }
 }
 
@@ -358,7 +359,8 @@ void instance_blackwing_lair::Update(uint32 uiDiff)
             pRazorgore->SummonCreature(aRazorgoreSpawns[i], pGenerator->GetPositionX(), pGenerator->GetPositionY(), pGenerator->GetPositionZ(), pGenerator->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 0);
         }
 
-        m_uiDefenseTimer = 20000;
+//         m_uiDefenseTimer = 20000;
+        m_uiDefenseTimer = 600000;
     }
     else
         m_uiDefenseTimer -= uiDiff;
