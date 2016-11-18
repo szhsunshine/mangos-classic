@@ -97,11 +97,14 @@ struct boss_chromaggusAI : public ScriptedAI
         m_uiCurrentVulnerabilitySpell = 0;                  // We use this to store our last vulnerability spell so we can remove it later
 
         m_uiShimmerTimer    = 0;                            // Time till we change vurlnerabilites
-        m_uiBreathOneTimer  = 30000;                        // First breath is 30 seconds
-        m_uiBreathTwoTimer  = 60000;                        // Second is 1 minute so that we can alternate
-        m_uiAfflictionTimer = 10000;                        // This is special - 5 seconds means that we cast this on 1 pPlayer every 5 sconds
-        m_uiFrenzyTimer     = 15000;
-
+//         m_uiBreathOneTimer  = 30000;                        // First breath is 30 seconds
+//         m_uiBreathTwoTimer  = 60000;                        // Second is 1 minute so that we can alternate
+//         m_uiAfflictionTimer = 10000;                        // This is special - 5 seconds means that we cast this on 1 pPlayer every 5 sconds
+//         m_uiFrenzyTimer     = 15000;
+        m_uiBreathOneTimer  = 60000;
+        m_uiBreathTwoTimer  = 120000;
+        m_uiAfflictionTimer = 20000;
+        m_uiFrenzyTimer     = 30000;
         m_bEnraged          = false;
     }
 
@@ -144,7 +147,8 @@ struct boss_chromaggusAI : public ScriptedAI
                 m_uiCurrentVulnerabilitySpell = uiSpell;
 
                 DoScriptText(EMOTE_SHIMMER, m_creature);
-                m_uiShimmerTimer = 45000;
+//                 m_uiShimmerTimer = 45000;
+                m_uiShimmerTimer = 90000;
             }
         }
         else
@@ -154,7 +158,8 @@ struct boss_chromaggusAI : public ScriptedAI
         if (m_uiBreathOneTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, m_uiBreathOneSpell) == CAST_OK)
-                m_uiBreathOneTimer = 60000;
+//                 m_uiBreathOneTimer = 60000;
+                m_uiBreathOneTimer = 120000;
         }
         else
             m_uiBreathOneTimer -= uiDiff;
@@ -163,7 +168,8 @@ struct boss_chromaggusAI : public ScriptedAI
         if (m_uiBreathTwoTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, m_uiBreathTwoSpell) == CAST_OK)
-                m_uiBreathTwoTimer = 60000;
+//                 m_uiBreathTwoTimer = 60000;
+                m_uiBreathTwoTimer = 120000;
         }
         else
             m_uiBreathTwoTimer -= uiDiff;
@@ -214,7 +220,8 @@ struct boss_chromaggusAI : public ScriptedAI
                 }
             }
 
-            m_uiAfflictionTimer = 10000;
+//             m_uiAfflictionTimer = 10000;
+            m_uiAfflictionTimer = 20000;
         }
         else
             m_uiAfflictionTimer -= uiDiff;
@@ -225,14 +232,16 @@ struct boss_chromaggusAI : public ScriptedAI
             if (DoCastSpellIfCan(m_creature, SPELL_FRENZY) == CAST_OK)
             {
                 DoScriptText(EMOTE_GENERIC_FRENZY_KILL, m_creature);
-                m_uiFrenzyTimer = urand(10000, 15000);
+//                 m_uiFrenzyTimer = urand(10000, 15000);
+                m_uiFrenzyTimer = urand(20000, 30000);
             }
         }
         else
             m_uiFrenzyTimer -= uiDiff;
 
         // Enrage if not already enraged and below 20%
-        if (!m_bEnraged && m_creature->GetHealthPercent() < 20.0f)
+//         if (!m_bEnraged && m_creature->GetHealthPercent() < 20.0f)
+        if (!m_bEnraged && m_creature->GetHealthPercent() < 10.0f)
         {
             DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
             m_bEnraged = true;
