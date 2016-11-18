@@ -48,7 +48,8 @@ struct boss_firemawAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiShadowFlameTimer = 30000;                       // These times are probably wrong
+//         m_uiShadowFlameTimer = 30000;                       // These times are probably wrong
+        m_uiShadowFlameTimer = 600000;
         m_uiWingBuffetTimer = 24000;
         m_uiFlameBuffetTimer = 5000;
     }
@@ -80,7 +81,8 @@ struct boss_firemawAI : public ScriptedAI
         if (m_uiShadowFlameTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_SHADOW_FLAME) == CAST_OK)
-                m_uiShadowFlameTimer = urand(15000, 18000);
+//                 m_uiShadowFlameTimer = urand(15000, 18000);
+                m_uiShadowFlameTimer = urand(590000, 600000);
         }
         else
             m_uiShadowFlameTimer -= uiDiff;
