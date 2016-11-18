@@ -38,7 +38,8 @@ enum
     GOSSIP_TEXT_NEFARIUS_3          = 7199,
 
     MAX_DRAKES                      = 5,
-    MAX_DRAKE_SUMMONS               = 42,
+//     MAX_DRAKE_SUMMONS               = 42,
+    MAX_DRAKE_SUMMONS               = 6,
     NPC_BRONZE_DRAKANOID            = 14263,
     NPC_BLUE_DRAKANOID              = 14261,
     NPC_RED_DRAKANOID               = 14264,
