@@ -49,6 +49,7 @@ enum
     SPELL_NEFARIUS_BARRIER          = 22663,                // immunity in phase 1
     SPELL_SHADOWBLINK_INTRO         = 22664,
     SPELL_SHADOWBOLT_VOLLEY         = 22665,
+
     SPELL_SILENCE                   = 22666,
     SPELL_SHADOW_COMMAND            = 22667,
     SPELL_SHADOWBOLT                = 22677,
@@ -58,6 +59,7 @@ enum
     SPELL_SUMMON_DRAKONID_BONES     = 23363,
 
     MAP_ID_BWL                      = 469,
+
 
     FACTION_BLACK_DRAGON            = 103
 };
@@ -70,6 +72,7 @@ static const DialogueEntry aIntroDialogue[] =
     {0, 0, 0},
 };
 
+
 struct SpawnLocation
 {
     float m_fX, m_fY, m_fZ;
@@ -79,6 +82,7 @@ static const SpawnLocation aNefarianLocs[4] =
 {
     { -7599.32f, -1191.72f, 475.545f},                      // opening where red/blue/black darknid spawner appear (ori 3.05433)
     { -7526.27f, -1135.04f, 473.445f},                      // same as above, closest to door (ori 5.75959)
+
     { -7498.177f, -1273.277f, 481.649f},                    // nefarian spawn location (ori 1.798)
     { -7502.002f, -1256.503f, 476.758f},                    // nefarian fly to this position
 };
@@ -89,6 +93,7 @@ static const uint32 aPossibleDrake[MAX_DRAKES] = {NPC_BRONZE_DRAKANOID, NPC_BLUE
 // Instead of morphing Victor Nefarius we will have him control phase 1
 // And then have him spawn "Nefarian" for phase 2
 // When phase 2 starts Victor Nefarius will go invisible and stop attacking
+
 // If Nefarian reched home because nef killed the players then nef will trigger this guy to EnterEvadeMode
 // and allow players to start the event over
 // If nefarian dies then he will kill himself then he will be despawned in Nefarian script
@@ -99,7 +104,8 @@ static const uint32 aPossibleDrake[MAX_DRAKES] = {NPC_BRONZE_DRAKANOID, NPC_BLUE
 struct boss_victor_nefariusAI : public ScriptedAI, private DialogueHelper
 {
     boss_victor_nefariusAI(Creature* pCreature) : ScriptedAI(pCreature),
-        DialogueHelper(aIntroDialogue)
+
+DialogueHelper(aIntroDialogue)
     {
         // Select the 2 different drakes that we are going to use until despawned
         // 5 possiblities for the first drake, 4 for the second, 20 total possiblites
@@ -109,7 +115,8 @@ struct boss_victor_nefariusAI : public ScriptedAI, private DialogueHelper
         uint8 uiPos2 = (uiPos1 + urand(1, MAX_DRAKES - 1)) % MAX_DRAKES;
 
         m_uiDrakeTypeOne = aPossibleDrake[uiPos1];
-        m_uiDrakeTypeTwo = aPossibleDrake[uiPos2];
+
+m_uiDrakeTypeTwo = aPossibleDrake[uiPos2];
 
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         InitializeDialogueHelper(m_pInstance);
@@ -137,8 +144,10 @@ struct boss_victor_nefariusAI : public ScriptedAI, private DialogueHelper
 
         m_uiSpawnedAdds             = 0;
         m_uiAddSpawnTimer           = 10000;
-        m_uiShadowBoltTimer         = 3000;
-        m_uiFearTimer               = 8000;
+//         m_uiShadowBoltTimer         = 3000;
+//         m_uiFearTimer               = 8000;
+        m_uiShadowBoltTimer         = 16000;
+        m_uiFearTimer               = 25000;
         m_uiShadowboltVolleyTimer   = 13000;
         m_uiSilenceTimer            = 23000;
         m_uiShadowCommandTimer      = 30000;
@@ -354,7 +363,8 @@ struct boss_victor_nefariusAI : public ScriptedAI, private DialogueHelper
                     m_creature->SummonCreature(NPC_NEFARIAN, aNefarianLocs[2].m_fX, aNefarianLocs[2].m_fY, aNefarianLocs[2].m_fZ, 0, TEMPSUMMON_DEAD_DESPAWN, 0, true);
                 }
 
-                m_uiAddSpawnTimer = 4000;
+//                 m_uiAddSpawnTimer = 4000;
+                m_uiAddSpawnTimer = 40000;
             }
             else
                 m_uiAddSpawnTimer -= uiDiff;
