@@ -55,10 +55,14 @@ struct boss_huhuranAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiFrenzyTimer         = urand(25000, 35000);
-        m_uiWyvernTimer         = urand(18000, 28000);
-        m_uiSpitTimer           = 8000;
-        m_uiNoxiousPoisonTimer  = urand(10000, 20000);
+//         m_uiFrenzyTimer         = urand(25000, 35000);
+//         m_uiWyvernTimer         = urand(18000, 28000);
+//         m_uiSpitTimer           = 8000;
+//         m_uiNoxiousPoisonTimer  = urand(10000, 20000);
+        m_uiFrenzyTimer         = urand(100000, 140000);
+        m_uiWyvernTimer         = urand(90000, 100000);
+        m_uiSpitTimer           = 600000;
+        m_uiNoxiousPoisonTimer  = urand(590000, 6000000);
         m_bIsBerserk            = false;
     }
 
@@ -94,7 +98,8 @@ struct boss_huhuranAI : public ScriptedAI
                 if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE) == CAST_OK)
                 {
                     DoScriptText(EMOTE_GENERIC_FRENZY_KILL, m_creature);
-                    m_uiFrenzyTimer = urand(25000, 35000);
+//                     m_uiFrenzyTimer = urand(25000, 35000);
+                    m_uiFrenzyTimer = urand(100000, 140000);
                 }
             }
             else
@@ -107,7 +112,8 @@ struct boss_huhuranAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_WYVERN_STING) == CAST_OK)
-                    m_uiWyvernTimer = urand(15000, 32000);
+//                     m_uiWyvernTimer = urand(15000, 32000);
+                    m_uiWyvernTimer = urand(60000, 200000);
             }
         }
         else
@@ -117,7 +123,8 @@ struct boss_huhuranAI : public ScriptedAI
         if (m_uiSpitTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_ACID_SPIT) == CAST_OK)
-                m_uiSpitTimer = urand(5000, 10000);
+//                 m_uiSpitTimer = urand(5000, 10000);
+                m_uiSpitTimer = urand(590000, 600000);
         }
         else
             m_uiSpitTimer -= uiDiff;
@@ -126,13 +133,15 @@ struct boss_huhuranAI : public ScriptedAI
         if (m_uiNoxiousPoisonTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_NOXIOUS_POISON) == CAST_OK)
-                m_uiNoxiousPoisonTimer = urand(12000, 24000);
+//                 m_uiNoxiousPoisonTimer = urand(12000, 24000);
+                m_uiNoxiousPoisonTimer = urand(590000, 600000);
         }
         else
             m_uiNoxiousPoisonTimer -= uiDiff;
 
         // Berserk
-        if (!m_bIsBerserk && m_creature->GetHealthPercent() < 30.0f)
+//         if (!m_bIsBerserk && m_creature->GetHealthPercent() < 30.0f)
+        if (!m_bIsBerserk && m_creature->GetHealthPercent() < 10.0f)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_BERSERK) == CAST_OK)
             {
