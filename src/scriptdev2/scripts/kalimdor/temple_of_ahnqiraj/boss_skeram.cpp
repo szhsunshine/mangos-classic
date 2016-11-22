@@ -72,10 +72,15 @@ struct boss_skeramAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiArcaneExplosionTimer = urand(6000, 12000);
-        m_uiFullFillmentTimer    = 15000;
-        m_uiBlinkTimer           = urand(30000, 45000);
-        m_uiEarthShockTimer      = 1200;
+//         m_uiArcaneExplosionTimer = urand(6000, 12000);
+//         m_uiFullFillmentTimer    = 15000;
+//         m_uiBlinkTimer           = urand(30000, 45000);
+//         m_uiEarthShockTimer      = 1200;
+        
+        m_uiArcaneExplosionTimer = urand(60000, 120000);
+        m_uiFullFillmentTimer    = 150000;
+        m_uiBlinkTimer           = urand(300000, 450000);
+        m_uiEarthShockTimer      = 12000;
 
         m_fHpCheck               = 75.0f;
 
@@ -154,9 +159,11 @@ struct boss_skeramAI : public ScriptedAI
 
             // The max health depends on the split phase. It's percent * original boss health
             if (fHealthPct < 25.0f)
-                fMaxHealthPct = 0.50f;
-            else if (fHealthPct < 50.0f)
+//                 fMaxHealthPct = 0.50f;
                 fMaxHealthPct = 0.20f;
+            else if (fHealthPct < 50.0f)
+//                 fMaxHealthPct = 0.20f;
+                fMaxHealthPct = 0.15f;
             else
                 fMaxHealthPct = 0.10f;
 
@@ -176,7 +183,8 @@ struct boss_skeramAI : public ScriptedAI
         if (m_uiArcaneExplosionTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_ARCANE_EXPLOSION) == CAST_OK)
-                m_uiArcaneExplosionTimer = urand(8000, 18000);
+//                 m_uiArcaneExplosionTimer = urand(8000, 18000);
+                m_uiArcaneExplosionTimer = urand(80000, 180000);
         }
         else
             m_uiArcaneExplosionTimer -= uiDiff;
@@ -187,7 +195,8 @@ struct boss_skeramAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_TRUE_FULFILLMENT) == CAST_OK)
-                    m_uiFullFillmentTimer = urand(20000, 30000);
+//                     m_uiFullFillmentTimer = urand(20000, 30000);
+                    m_uiFullFillmentTimer = urand(200000, 300000);
             }
         }
         else
@@ -207,7 +216,8 @@ struct boss_skeramAI : public ScriptedAI
             if (m_creature->GetVisibility() != VISIBILITY_ON)
                 m_creature->SetVisibility(VISIBILITY_ON);
 
-            m_uiBlinkTimer = urand(10000, 30000);
+//             m_uiBlinkTimer = urand(10000, 30000);
+            m_uiBlinkTimer = urand(100000, 300000);
         }
         else
             m_uiBlinkTimer -= uiDiff;
@@ -218,7 +228,8 @@ struct boss_skeramAI : public ScriptedAI
             if (!m_creature->CanReachWithMeleeAttack(m_creature->getVictim()) || !m_creature->getVictim()->hasUnitState(UNIT_STAT_MELEE_ATTACKING))
             {
                 if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_EARTH_SHOCK) == CAST_OK)
-                    m_uiEarthShockTimer = 1200;
+//                     m_uiEarthShockTimer = 1200;
+                    m_uiEarthShockTimer = 12000;
             }
         }
         else
@@ -233,7 +244,8 @@ struct boss_skeramAI : public ScriptedAI
                 m_fHpCheck -= 25.0f;
                 // Teleport shortly after the images are summoned and set invisible to clear the selection (Workaround alert!!!)
                 m_creature->SetVisibility(VISIBILITY_OFF);
-                m_uiBlinkTimer = 2000;
+//                 m_uiBlinkTimer = 2000;
+                m_uiBlinkTimer = 20000;
             }
         }
 
