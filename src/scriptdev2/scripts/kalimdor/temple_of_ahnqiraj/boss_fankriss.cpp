@@ -66,10 +66,14 @@ struct boss_fankrissAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiMortalWoundTimer = urand(10000, 15000);
-        m_uiSummonWormTimer  = urand(30000, 50000);
-        m_uiEntangleTimer    = urand(25000, 40000);
-        m_uiEntangleSummonTimer = 0;
+//         m_uiMortalWoundTimer = urand(10000, 15000);
+//         m_uiSummonWormTimer  = urand(30000, 50000);
+//         m_uiEntangleTimer    = urand(25000, 40000);
+//         m_uiEntangleSummonTimer = 0;
+        m_uiMortalWoundTimer = urand(100000, 150000);
+        m_uiSummonWormTimer  = urand(300000, 500000);
+        m_uiEntangleTimer    = urand(250000, 400000);
+        m_uiEntangleSummonTimer = 30000;
     }
 
     void Aggro(Unit* /*pWho*/) override
@@ -112,7 +116,8 @@ struct boss_fankrissAI : public ScriptedAI
         if (m_uiMortalWoundTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_MORTAL_WOUND) == CAST_OK)
-                m_uiMortalWoundTimer = urand(7000, 14000);
+//                 m_uiMortalWoundTimer = urand(7000, 14000);
+                m_uiMortalWoundTimer = urand(70000, 140000);
         }
         else
             m_uiMortalWoundTimer -= uiDiff;
@@ -121,7 +126,8 @@ struct boss_fankrissAI : public ScriptedAI
         {
             uint8 uiSpawnIndex = urand(0, 2);
             if (DoCastSpellIfCan(m_creature, aSummonWormSpells[uiSpawnIndex]) == CAST_OK)
-                m_uiSummonWormTimer = urand(15000, 40000);
+//                 m_uiSummonWormTimer = urand(15000, 40000);
+                m_uiSummonWormTimer = urand(150000, 400000);
         }
         else
             m_uiSummonWormTimer -= uiDiff;
@@ -135,8 +141,10 @@ struct boss_fankrissAI : public ScriptedAI
                 if (DoCastSpellIfCan(pTarget, aEntangleSpells[uiEntangleIndex]) == CAST_OK)
                 {
                     m_EntangleTargetGuid = pTarget->GetObjectGuid();
-                    m_uiEntangleSummonTimer = 1000;
-                    m_uiEntangleTimer = urand(40000, 70000);
+//                     m_uiEntangleSummonTimer = 1000;
+                    m_uiEntangleSummonTimer = 10000;
+//                     m_uiEntangleTimer = urand(40000, 70000);
+                    m_uiEntangleTimer = urand(400000, 700000);
                 }
             }
         }
@@ -151,7 +159,8 @@ struct boss_fankrissAI : public ScriptedAI
                 if (Player* pTarget = m_creature->GetMap()->GetPlayer(m_EntangleTargetGuid))
                 {
                     float fX, fY, fZ;
-                    for (uint8 i = 0; i < 4; ++i)
+//                     for (uint8 i = 0; i < 4; ++i)
+                    for (uint8 i = 0; i < 1; ++i)
                     {
                         m_creature->GetRandomPoint(pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 3.0f, fX, fY, fZ);
                         m_creature->SummonCreature(NPC_VEKNISS_HATCHLING, fX, fY, fZ, 0.0f, TEMPSUMMON_TIMED_OOC_DESPAWN, 10000);
