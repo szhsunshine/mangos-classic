@@ -252,7 +252,8 @@ void instance_blackwing_lair::SetData64(uint32 uiData, uint64 uiGuid)
             m_lUsedEggsGuids.push_back(pEgg->GetObjectGuid());
 
         // If all eggs are destroyed, then allow Razorgore to be attacked
-        if (m_lUsedEggsGuids.size() == m_lDragonEggsGuids.size())
+//         if (m_lUsedEggsGuids.size() == m_lDragonEggsGuids.size())
+        if (m_lUsedEggsGuids.size() == m_lUsedEggsGuids.size())
         {
             SetData(TYPE_RAZORGORE, SPECIAL);
             DoToggleGameObjectFlags(GO_ORB_OF_DOMINATION, GO_FLAG_NO_INTERACT, true);
