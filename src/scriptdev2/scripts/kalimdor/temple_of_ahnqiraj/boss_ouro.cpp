@@ -243,7 +243,7 @@ struct boss_ouroAI : public Scripted_NoMovementAI
             if (m_uiSubmergeTimer < uiDiff)
             {
                 // Teleport to the trigger in order to get a new location
-//                 if (Creature* pTrigger = m_creature->GetMap()->GetCreature(m_ouroTriggerGuid))
+                if (Creature* pTrigger = m_creature->GetMap()->GetCreature(m_ouroTriggerGuid))
                     m_creature->NearTeleportTo(pTrigger->GetPositionX(), pTrigger->GetPositionY(), pTrigger->GetPositionZ(), 0);
 
                 if (DoCastSpellIfCan(m_creature, SPELL_BIRTH) == CAST_OK)
