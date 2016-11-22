@@ -106,9 +106,13 @@ struct boss_viscidusAI : public ScriptedAI
         m_uiHitCount              = 0;
 
         m_uiExplodeDelayTimer     = 0;
-        m_uiToxinTimer            = 30000;
-        m_uiPoisonShockTimer      = urand(7000, 12000);
-        m_uiPoisonBoltVolleyTimer = urand(10000, 15000);
+//         m_uiToxinTimer            = 30000;
+//         m_uiPoisonShockTimer      = urand(7000, 12000);
+//         m_uiPoisonBoltVolleyTimer = urand(10000, 15000);
+        
+        m_uiToxinTimer            = 300000;
+        m_uiPoisonShockTimer      = urand(70000, 120000);
+        m_uiPoisonBoltVolleyTimer = urand(100000, 150000);
 
         DoCastSpellIfCan(m_creature, SPELL_MEMBRANE_VISCIDUS, CAST_TRIGGERED);
         DoCastSpellIfCan(m_creature, SPELL_VISCIDUS_WEAKNESS, CAST_TRIGGERED);
@@ -236,7 +240,8 @@ struct boss_viscidusAI : public ScriptedAI
                     DoCastSpellIfCan(m_creature, auiGlobSummonSpells[i], CAST_TRIGGERED);
 
                 m_creature->RemoveAurasDueToSpell(SPELL_VISCIDUS_FREEZE);
-                m_uiExplodeDelayTimer = 2000;
+//                 m_uiExplodeDelayTimer = 2000;
+                m_uiExplodeDelayTimer = 20000;
 
                 SetCombatMovement(false);
                 m_creature->GetMotionMaster()->MoveIdle();
@@ -320,7 +325,8 @@ struct boss_viscidusAI : public ScriptedAI
         if (m_uiPoisonShockTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_POISON_SHOCK) == CAST_OK)
-                m_uiPoisonShockTimer = urand(7000, 12000);
+//                 m_uiPoisonShockTimer = urand(7000, 12000);
+                m_uiPoisonShockTimer = urand(70000, 120000);
         }
         else
             m_uiPoisonShockTimer -= uiDiff;
@@ -328,7 +334,8 @@ struct boss_viscidusAI : public ScriptedAI
         if (m_uiPoisonBoltVolleyTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_POISONBOLT_VOLLEY) == CAST_OK)
-                m_uiPoisonBoltVolleyTimer = urand(10000, 15000);
+//                 m_uiPoisonBoltVolleyTimer = urand(10000, 15000);
+                m_uiPoisonBoltVolleyTimer = urand(100000, 150000);
         }
         else
             m_uiPoisonBoltVolleyTimer -= uiDiff;
@@ -338,7 +345,8 @@ struct boss_viscidusAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_SUMMONT_TRIGGER) == CAST_OK)
-                    m_uiToxinTimer = 30000;
+//                     m_uiToxinTimer = 30000;
+                    m_uiToxinTimer = 300000;
             }
         }
         else
