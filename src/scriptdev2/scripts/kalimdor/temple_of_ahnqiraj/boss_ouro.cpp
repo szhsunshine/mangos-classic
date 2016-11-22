@@ -87,12 +87,19 @@ struct boss_ouroAI : public Scripted_NoMovementAI
 
     void Reset() override
     {
-        m_uiSweepTimer        = urand(35000, 40000);
-        m_uiSandBlastTimer    = urand(30000, 45000);
-        m_uiSubmergeTimer     = 90000;
-        m_uiSummonBaseTimer   = 2000;
+//         m_uiSweepTimer        = urand(35000, 40000);
+//         m_uiSandBlastTimer    = urand(30000, 45000);
+//         m_uiSubmergeTimer     = 90000;
+//         m_uiSummonBaseTimer   = 2000;
 
-        m_uiSummonMoundTimer  = 10000;
+//         m_uiSummonMoundTimer  = 10000;
+
+        m_uiSweepTimer        = urand(350000, 400000);
+        m_uiSandBlastTimer    = urand(300000, 450000);
+        m_uiSubmergeTimer     = 900000;
+        m_uiSummonBaseTimer   = 20000;
+
+        m_uiSummonMoundTimer  = 100000;
 
         m_bEnraged            = false;
         m_bSubmerged          = false;
@@ -146,7 +153,8 @@ struct boss_ouroAI : public Scripted_NoMovementAI
                 {
                     // Note: server side spells should be cast directly
                     m_creature->CastSpell(m_creature, SPELL_SUMMON_BASE, true);
-                    m_uiSummonBaseTimer = 0;
+//                     m_uiSummonBaseTimer = 0;
+                    m_uiSummonBaseTimer = 20000;
                 }
                 else
                     m_uiSummonBaseTimer -= uiDiff;
@@ -156,7 +164,8 @@ struct boss_ouroAI : public Scripted_NoMovementAI
             if (m_uiSweepTimer < uiDiff)
             {
                 if (DoCastSpellIfCan(m_creature, SPELL_SWEEP) == CAST_OK)
-                    m_uiSweepTimer = 20000;
+//                     m_uiSweepTimer = 20000;
+                    m_uiSweepTimer = 200000;
             }
             else
                 m_uiSweepTimer -= uiDiff;
@@ -165,7 +174,8 @@ struct boss_ouroAI : public Scripted_NoMovementAI
             if (m_uiSandBlastTimer < uiDiff)
             {
                 if (DoCastSpellIfCan(m_creature, SPELL_SANDBLAST) == CAST_OK)
-                    m_uiSandBlastTimer = 22000;
+//                     m_uiSandBlastTimer = 22000;
+                    m_uiSandBlastTimer = 220000;
             }
             else
                 m_uiSandBlastTimer -= uiDiff;
@@ -173,7 +183,8 @@ struct boss_ouroAI : public Scripted_NoMovementAI
             if (!m_bEnraged)
             {
                 // Enrage at 20% HP
-                if (m_creature->GetHealthPercent() < 20.0f)
+//                 if (m_creature->GetHealthPercent() < 20.0f)
+                if (m_creature->GetHealthPercent() < 10.0f)
                 {
                     if (DoCastSpellIfCan(m_creature, SPELL_BERSERK) == CAST_OK)
                     {
@@ -193,7 +204,8 @@ struct boss_ouroAI : public Scripted_NoMovementAI
                         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
                         m_bSubmerged      = true;
-                        m_uiSubmergeTimer = 30000;
+//                         m_uiSubmergeTimer = 30000;
+                        m_uiSubmergeTimer = 300000;
                     }
                 }
                 else
@@ -205,7 +217,8 @@ struct boss_ouroAI : public Scripted_NoMovementAI
                 if (m_uiSummonMoundTimer < uiDiff)
                 {
                     if (DoCastSpellIfCan(m_creature, SPELL_SUMMON_OURO_MOUND) == CAST_OK)
-                        m_uiSummonMoundTimer = 10000;
+//                         m_uiSummonMoundTimer = 10000;
+                        m_uiSummonMoundTimer = 100000;
                 }
                 else
                     m_uiSummonMoundTimer -= uiDiff;
@@ -230,7 +243,7 @@ struct boss_ouroAI : public Scripted_NoMovementAI
             if (m_uiSubmergeTimer < uiDiff)
             {
                 // Teleport to the trigger in order to get a new location
-                if (Creature* pTrigger = m_creature->GetMap()->GetCreature(m_ouroTriggerGuid))
+//                 if (Creature* pTrigger = m_creature->GetMap()->GetCreature(m_ouroTriggerGuid))
                     m_creature->NearTeleportTo(pTrigger->GetPositionX(), pTrigger->GetPositionY(), pTrigger->GetPositionZ(), 0);
 
                 if (DoCastSpellIfCan(m_creature, SPELL_BIRTH) == CAST_OK)
@@ -239,8 +252,10 @@ struct boss_ouroAI : public Scripted_NoMovementAI
                     m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
                     m_bSubmerged        = false;
-                    m_uiSummonBaseTimer = 2000;
-                    m_uiSubmergeTimer   = 90000;
+//                     m_uiSummonBaseTimer = 2000;
+//                     m_uiSubmergeTimer   = 90000;
+                    m_uiSummonBaseTimer = 20000;
+                    m_uiSubmergeTimer   = 900000;
                 }
             }
             else
