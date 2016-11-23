@@ -62,15 +62,22 @@ enum
     NPC_GLOB_OF_VISCIDUS        = 15667,
     NPC_VISCIDUS_TRIGGER        = 15922,                    // handles aura 26575
 
-    MAX_VISCIDUS_GLOBS          = 20,                       // there are 20 summoned globs; each glob = 5% hp
+//     MAX_VISCIDUS_GLOBS          = 20,                       // there are 20 summoned globs; each glob = 5% hp
+    MAX_VISCIDUS_GLOBS          = 2,
 
     // hitcounts
-    HITCOUNT_SLOW               = 100,
-    HITCOUNT_SLOW_MORE          = 150,
-    HITCOUNT_FREEZE             = 200,
-    HITCOUNT_CRACK              = 50,
-    HITCOUNT_SHATTER            = 100,
-    HITCOUNT_EXPLODE            = 150,
+//     HITCOUNT_SLOW               = 100,
+//     HITCOUNT_SLOW_MORE          = 150,
+//     HITCOUNT_FREEZE             = 200,
+//     HITCOUNT_CRACK              = 50,
+//     HITCOUNT_SHATTER            = 100,
+//     HITCOUNT_EXPLODE            = 150,
+    HITCOUNT_SLOW               = 10,
+    HITCOUNT_SLOW_MORE          = 15,
+    HITCOUNT_FREEZE             = 20,
+    HITCOUNT_CRACK              = 5,
+    HITCOUNT_SHATTER            = 10,
+    HITCOUNT_EXPLODE            = 15,
 
     // phases
     PHASE_NORMAL                = 1,
@@ -78,7 +85,8 @@ enum
     PHASE_EXPLODED              = 3,
 };
 
-static const uint32 auiGlobSummonSpells[MAX_VISCIDUS_GLOBS] = { 25865, 25866, 25867, 25868, 25869, 25870, 25871, 25872, 25873, 25874, 25875, 25876, 25877, 25878, 25879, 25880, 25881, 25882, 25883, 25884 };
+// static const uint32 auiGlobSummonSpells[MAX_VISCIDUS_GLOBS] = { 25865, 25866, 25867, 25868, 25869, 25870, 25871, 25872, 25873, 25874, 25875, 25876, 25877, 25878, 25879, 25880, 25881, 25882, 25883, 25884 };
+static const uint32 auiGlobSummonSpells[MAX_VISCIDUS_GLOBS] = { 25865, 25866 };
 
 struct boss_viscidusAI : public ScriptedAI
 {
@@ -232,7 +240,7 @@ struct boss_viscidusAI : public ScriptedAI
                 m_uiPhase = PHASE_EXPLODED;
                 m_uiHitCount = 0;
                 m_lGlobesGuidList.clear();
-                uint32 uiGlobeCount = m_creature->GetHealthPercent() / 5.0f;
+                uint32 uiGlobeCount = m_creature->GetHealthPercent() / 50.0f;
 
                 DoCastSpellIfCan(m_creature, SPELL_SUMMON_GLOBS, CAST_TRIGGERED);
 
@@ -240,8 +248,7 @@ struct boss_viscidusAI : public ScriptedAI
                     DoCastSpellIfCan(m_creature, auiGlobSummonSpells[i], CAST_TRIGGERED);
 
                 m_creature->RemoveAurasDueToSpell(SPELL_VISCIDUS_FREEZE);
-//                 m_uiExplodeDelayTimer = 2000;
-                m_uiExplodeDelayTimer = 20000;
+                m_uiExplodeDelayTimer = 2000;
 
                 SetCombatMovement(false);
                 m_creature->GetMotionMaster()->MoveIdle();
