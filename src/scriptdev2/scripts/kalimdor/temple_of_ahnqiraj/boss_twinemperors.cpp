@@ -83,7 +83,8 @@ struct boss_twin_emperorsAI : public ScriptedAI
 //         m_uiBugAbilityTimer = urand(7000, 14000);
         m_uiTeleportTimer   = 350000;
         m_uiBugAbilityTimer = urand(70000, 140000);
-        m_uiBerserkTimer    = 15 * MINUTE * IN_MILLISECONDS;
+//         m_uiBerserkTimer    = 15 * MINUTE * IN_MILLISECONDS;
+        m_uiBerserkTimer    = 30 * MINUTE * IN_MILLISECONDS;
     }
 
     // Workaround for the shared health pool
@@ -220,7 +221,9 @@ struct boss_veknilashAI : public boss_twin_emperorsAI
     void MoveInLineOfSight(Unit* pWho) override
     {
         if (m_pInstance && m_pInstance->GetData(TYPE_TWINS) == IN_PROGRESS && pWho->GetEntry() == NPC_VEKLOR && pWho->IsWithinDistInMap(m_creature, 60.0f))
-            DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        {
+//             DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        }
 
         ScriptedAI::MoveInLineOfSight(pWho);
     }
@@ -335,7 +338,9 @@ struct boss_veklorAI : public boss_twin_emperorsAI
     void MoveInLineOfSight(Unit* pWho) override
     {
         if (m_pInstance && m_pInstance->GetData(TYPE_TWINS) == IN_PROGRESS && pWho->GetEntry() == NPC_VEKNILASH && pWho->IsWithinDistInMap(m_creature, 60.0f))
-            DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        {
+//             DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        }
 
         ScriptedAI::MoveInLineOfSight(pWho);
     }
