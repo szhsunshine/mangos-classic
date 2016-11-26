@@ -75,8 +75,8 @@ struct boss_razorgoreAI : public ScriptedAI
         if (m_pInstance)
         {
             // Don't set instance data unless all eggs are destroyed
-            if (m_pInstance->GetData(TYPE_RAZORGORE) != SPECIAL)
-                return;
+//             if (m_pInstance->GetData(TYPE_RAZORGORE) != SPECIAL)
+//                 return;
 
             m_pInstance->SetData(TYPE_RAZORGORE, DONE);
         }
