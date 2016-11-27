@@ -507,6 +507,9 @@ class World
         /// Get configuration about force-loaded maps
         bool isForceLoadMap(uint32 id) const { return m_configForceLoadMapIds.find(id) != m_configForceLoadMapIds.end(); }
 
+        /// Get configuration about learn spell limit
+        bool isAllowSpellIdToLearn(uint32 id) const {return m_configAllowSpellIdsToLearn.find(id) != m_configAllowSpellIdsToLearn.end(); }
+
         /// Are we on a "Player versus Player" server?
         bool IsPvPRealm() { return (getConfig(CONFIG_UINT32_GAME_TYPE) == REALM_TYPE_PVP || getConfig(CONFIG_UINT32_GAME_TYPE) == REALM_TYPE_RPPVP || getConfig(CONFIG_UINT32_GAME_TYPE) == REALM_TYPE_FFA_PVP); }
         bool IsFFAPvPRealm() { return getConfig(CONFIG_UINT32_GAME_TYPE) == REALM_TYPE_FFA_PVP; }
@@ -643,6 +646,9 @@ class World
 
         // List of Maps that should be force-loaded on startup
         std::set<uint32> m_configForceLoadMapIds;
+
+        // List of Spell ids that allow to learn
+        std::set<uint32> m_configAllowSpellIdsToLearn;
 };
 
 extern uint32 realmID;

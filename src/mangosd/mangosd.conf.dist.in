@@ -1562,3 +1562,8 @@ SOAP.Port = 7878
 CharDelete.Method = 0
 CharDelete.MinLevel = 0
 CharDelete.KeepDays = 30
+
+#17039 铸剑大师
+#17040 铸锤大师
+#17041 铸斧大师
+command.learn.allow.spellids="17039,17040,17041"
