@@ -50,9 +50,11 @@ struct boss_flamegorAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiShadowFlameTimer = 21000;                       // These times are probably wrong
+//         m_uiShadowFlameTimer = 21000;                       // These times are probably wrong
+        m_uiShadowFlameTimer = 600000;
         m_uiWingBuffetTimer = 35000;
-        m_uiFrenzyTimer = 10000;
+//         m_uiFrenzyTimer = 10000;
+        m_uiFrenzyTimer = 600000;
     }
 
     void Aggro(Unit* /*pWho*/) override
@@ -82,7 +84,8 @@ struct boss_flamegorAI : public ScriptedAI
         if (m_uiShadowFlameTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_SHADOW_FLAME) == CAST_OK)
-                m_uiShadowFlameTimer = urand(15000, 22000);
+//                 m_uiShadowFlameTimer = urand(15000, 22000);
+                m_uiShadowFlameTimer = urand(590000, 600000);
         }
         else
             m_uiShadowFlameTimer -= uiDiff;
@@ -107,7 +110,8 @@ struct boss_flamegorAI : public ScriptedAI
             if (DoCastSpellIfCan(m_creature, SPELL_FRENZY) == CAST_OK)
             {
                 DoScriptText(EMOTE_GENERIC_FRENZY, m_creature);
-                m_uiFrenzyTimer = urand(8000, 10000);
+//                 m_uiFrenzyTimer = urand(8000, 10000);
+                m_uiFrenzyTimer = urand(590000, 600000);
             }
         }
         else

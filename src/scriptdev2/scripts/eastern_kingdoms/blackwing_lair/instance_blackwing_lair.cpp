@@ -252,7 +252,8 @@ void instance_blackwing_lair::SetData64(uint32 uiData, uint64 uiGuid)
             m_lUsedEggsGuids.push_back(pEgg->GetObjectGuid());
 
         // If all eggs are destroyed, then allow Razorgore to be attacked
-        if (m_lUsedEggsGuids.size() == m_lDragonEggsGuids.size())
+//         if (m_lUsedEggsGuids.size() == m_lDragonEggsGuids.size())
+        if (m_lUsedEggsGuids.size() == m_lUsedEggsGuids.size())
         {
             SetData(TYPE_RAZORGORE, SPECIAL);
             DoToggleGameObjectFlags(GO_ORB_OF_DOMINATION, GO_FLAG_NO_INTERACT, true);
@@ -289,7 +290,8 @@ void instance_blackwing_lair::OnCreatureEnterCombat(Creature* pCreature)
     if (pCreature->GetEntry() == NPC_GRETHOK_CONTROLLER)
     {
         SetData(TYPE_RAZORGORE, IN_PROGRESS);
-        m_uiDefenseTimer = 40000;
+//         m_uiDefenseTimer = 40000;
+        m_uiDefenseTimer = 600000;
     }
 }
 
@@ -358,7 +360,8 @@ void instance_blackwing_lair::Update(uint32 uiDiff)
             pRazorgore->SummonCreature(aRazorgoreSpawns[i], pGenerator->GetPositionX(), pGenerator->GetPositionY(), pGenerator->GetPositionZ(), pGenerator->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 0);
         }
 
-        m_uiDefenseTimer = 20000;
+//         m_uiDefenseTimer = 20000;
+        m_uiDefenseTimer = 600000;
     }
     else
         m_uiDefenseTimer -= uiDiff;

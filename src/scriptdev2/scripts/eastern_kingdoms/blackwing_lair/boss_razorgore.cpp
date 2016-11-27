@@ -75,8 +75,8 @@ struct boss_razorgoreAI : public ScriptedAI
         if (m_pInstance)
         {
             // Don't set instance data unless all eggs are destroyed
-            if (m_pInstance->GetData(TYPE_RAZORGORE) != SPECIAL)
-                return;
+//             if (m_pInstance->GetData(TYPE_RAZORGORE) != SPECIAL)
+//                 return;
 
             m_pInstance->SetData(TYPE_RAZORGORE, DONE);
         }
@@ -93,21 +93,21 @@ struct boss_razorgoreAI : public ScriptedAI
             return;
 
         // Don't allow any accident
-        if (m_bEggsExploded)
-        {
-            uiDamage = 0;
-            return;
-        }
+//         if (m_bEggsExploded)
+//         {
+//             uiDamage = 0;
+//             return;
+//         }
 
         // Boss explodes everything and resets - this happens if not all eggs are destroyed
-        if (m_pInstance->GetData(TYPE_RAZORGORE) == IN_PROGRESS)
-        {
-            uiDamage = 0;
-            m_bEggsExploded = true;
-            m_pInstance->SetData(TYPE_RAZORGORE, FAIL);
-            DoCastSpellIfCan(m_creature, SPELL_EXPLODE_ORB, CAST_TRIGGERED);
-            m_creature->ForcedDespawn();
-        }
+//         if (m_pInstance->GetData(TYPE_RAZORGORE) == IN_PROGRESS)
+//         {
+//             uiDamage = 0;
+//             m_bEggsExploded = true;
+//             m_pInstance->SetData(TYPE_RAZORGORE, FAIL);
+//             DoCastSpellIfCan(m_creature, SPELL_EXPLODE_ORB, CAST_TRIGGERED);
+//             m_creature->ForcedDespawn();
+//         }
     }
 
     void JustReachedHome() override
@@ -119,8 +119,8 @@ struct boss_razorgoreAI : public ScriptedAI
     void JustSummoned(Creature* pSummoned) override
     {
         // Defenders should attack the players and the boss
-        pSummoned->SetInCombatWithZone();
-        pSummoned->AI()->AttackStart(m_creature);
+//         pSummoned->SetInCombatWithZone();
+//         pSummoned->AI()->AttackStart(m_creature);
     }
 
     void UpdateAI(const uint32 uiDiff) override
