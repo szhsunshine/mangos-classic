@@ -92,7 +92,8 @@ struct boss_majordomoAI : public ScriptedAI
         m_uiMagicReflectionTimer  = 30000;                  // Damage reflection first so we alternate
         m_uiDamageReflectionTimer = 15000;
         m_uiBlastwaveTimer = 10000;
-        m_uiTeleportTimer = 20000;
+//         m_uiTeleportTimer = 20000;
+        m_uiTeleportTimer = 600000;
         m_uiAegisTimer = 5000;
         m_uiSpeechTimer = 1000;
 
@@ -394,7 +395,8 @@ struct boss_majordomoAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_TELEPORT) == CAST_OK)
-                    m_uiTeleportTimer = 20000;
+//                     m_uiTeleportTimer = 20000;
+                    m_uiTeleportTimer = 600000;
             }
         }
         else
