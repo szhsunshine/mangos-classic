@@ -3533,6 +3533,15 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     unitTarget->CastSpell(unitTarget, roll_chance_i(50) ? 24714 : 24715, TRIGGERED_OLD_TRIGGERED);
                     return;
                 }
+                case 25778:                                 // Knock Away
+                {
+                    if (!unitTarget || m_caster->GetTypeId() != TYPEID_UNIT)
+                        return;
+ 
+                    if (m_caster->getThreatManager().getThreat(unitTarget))
+                        m_caster->getThreatManager().modifyThreatPercent(unitTarget, -50);
+                    return;
+                }
                 case 26004:                                 // Mistletoe
                 {
                     if (!unitTarget)
