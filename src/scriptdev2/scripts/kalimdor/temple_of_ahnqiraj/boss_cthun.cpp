@@ -712,7 +712,7 @@ struct npc_giant_claw_tentacleAI : public Scripted_NoMovementAI
         m_uiThrashTimer     = 50000;
         m_uiDistCheckTimer  = 50000;
 
-        DoCastSpellIfCan(m_creature, SPELL_GIANT_GROUND_RUPTURE);
+        // DoCastSpellIfCan(m_creature, SPELL_GIANT_GROUND_RUPTURE);
     }
 
     void UpdateAI(const uint32 uiDiff) override

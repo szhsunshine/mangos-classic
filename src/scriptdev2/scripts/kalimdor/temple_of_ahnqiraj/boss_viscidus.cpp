@@ -110,7 +110,8 @@ struct boss_viscidusAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiPhase                 = PHASE_NORMAL;
+        // m_uiPhase                 = PHASE_NORMAL;
+        m_uiPhase                 = PHASE_EXPLODED;
         m_uiHitCount              = 0;
 
         m_uiExplodeDelayTimer     = 0;
@@ -302,7 +303,7 @@ struct boss_viscidusAI : public ScriptedAI
                 return;
 
             // reset phase if not already exploded
-            m_uiPhase = PHASE_NORMAL;
+            // m_uiPhase = PHASE_NORMAL;
             m_uiHitCount = 0;
         }
     }
