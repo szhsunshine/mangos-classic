@@ -52,11 +52,15 @@ struct boss_azuregosAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiManaStormTimer  = urand(5000, 17000);
-        m_uiChillTimer      = urand(10000, 30000);
+//         m_uiManaStormTimer  = urand(5000, 17000);
+        m_uiManaStormTimer  = urand(590000, 600000);
+//         m_uiChillTimer      = urand(10000, 30000);
+        m_uiChillTimer      = urand(590000, 600000);
         m_uiBreathTimer     = urand(2000, 8000);
-        m_uiTeleportTimer   = 30000;
-        m_uiReflectTimer    = urand(15000, 30000);
+//         m_uiTeleportTimer   = 30000;
+        m_uiTeleportTimer   = 600000;
+//         m_uiReflectTimer    = urand(15000, 30000);
+        m_uiReflectTimer    = urand(590000, 600000);
         m_uiCleaveTimer     = 7000;
         m_bEnraged          = false;
     }
@@ -85,7 +89,8 @@ struct boss_azuregosAI : public ScriptedAI
             if (DoCastSpellIfCan(m_creature, SPELL_ARCANE_VACUUM) == CAST_OK)
             {
                 DoScriptText(SAY_TELEPORT, m_creature);
-                m_uiTeleportTimer = 30000;
+//                 m_uiTeleportTimer = 30000;
+                m_uiTeleportTimer = 600000;
             }
         }
         else
@@ -95,7 +100,8 @@ struct boss_azuregosAI : public ScriptedAI
         if (m_uiChillTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_CHILL) == CAST_OK)
-                m_uiChillTimer = urand(13000, 25000);
+//                 m_uiChillTimer = urand(13000, 25000);
+                m_uiChillTimer = urand(590000, 600000);
         }
         else
             m_uiChillTimer -= uiDiff;
@@ -115,7 +121,8 @@ struct boss_azuregosAI : public ScriptedAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_MANA_STORM) == CAST_OK)
-                    m_uiManaStormTimer = urand(7500, 12500);
+//                     m_uiManaStormTimer = urand(7500, 12500);
+                    m_uiManaStormTimer = urand(590000, 600000);
             }
         }
         else
@@ -125,7 +132,8 @@ struct boss_azuregosAI : public ScriptedAI
         if (m_uiReflectTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_REFLECT) == CAST_OK)
-                m_uiReflectTimer = urand(20000, 35000);
+//                 m_uiReflectTimer = urand(20000, 35000);
+                m_uiReflectTimer = urand(590000, 600000);
         }
         else
             m_uiReflectTimer -= uiDiff;
