@@ -79,9 +79,12 @@ struct boss_twin_emperorsAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiTeleportTimer   = 35000;
-        m_uiBugAbilityTimer = urand(7000, 14000);
-        m_uiBerserkTimer    = 15 * MINUTE * IN_MILLISECONDS;
+//         m_uiTeleportTimer   = 35000;
+//         m_uiBugAbilityTimer = urand(7000, 14000);
+        m_uiTeleportTimer   = 350000;
+        m_uiBugAbilityTimer = urand(70000, 140000);
+//         m_uiBerserkTimer    = 15 * MINUTE * IN_MILLISECONDS;
+        m_uiBerserkTimer    = 30 * MINUTE * IN_MILLISECONDS;
     }
 
     // Workaround for the shared health pool
@@ -170,7 +173,8 @@ struct boss_twin_emperorsAI : public ScriptedAI
         if (m_uiTeleportTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_TWIN_TELEPORT) == CAST_OK)
-                m_uiTeleportTimer = 35000;
+//                 m_uiTeleportTimer = 35000;
+                m_uiTeleportTimer = 350000;
         }
         else
             m_uiTeleportTimer -= uiDiff;
@@ -178,7 +182,8 @@ struct boss_twin_emperorsAI : public ScriptedAI
         if (m_uiBugAbilityTimer < uiDiff)
         {
             if (DoHandleBugAbility())
-                m_uiBugAbilityTimer = urand(10000, 17000);
+//                 m_uiBugAbilityTimer = urand(10000, 17000);
+                m_uiBugAbilityTimer = urand(100000, 170000);
         }
         else
             m_uiBugAbilityTimer -= uiDiff;
@@ -207,14 +212,18 @@ struct boss_veknilashAI : public boss_twin_emperorsAI
     {
         boss_twin_emperorsAI::Reset();
 
-        m_uiUppercutTimer           = urand(14000, 29000);
-        m_uiUnbalancingStrikeTimer = urand(8000, 18000);
+//         m_uiUppercutTimer           = urand(14000, 29000);
+//         m_uiUnbalancingStrikeTimer = urand(8000, 18000);
+        m_uiUppercutTimer           = urand(140000, 290000);
+        m_uiUnbalancingStrikeTimer = urand(80000, 180000);
     }
 
     void MoveInLineOfSight(Unit* pWho) override
     {
         if (m_pInstance && m_pInstance->GetData(TYPE_TWINS) == IN_PROGRESS && pWho->GetEntry() == NPC_VEKLOR && pWho->IsWithinDistInMap(m_creature, 60.0f))
-            DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        {
+//             DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        }
 
         ScriptedAI::MoveInLineOfSight(pWho);
     }
@@ -282,7 +291,8 @@ struct boss_veknilashAI : public boss_twin_emperorsAI
         if (m_uiUnbalancingStrikeTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_UNBALANCING_STRIKE) == CAST_OK)
-                m_uiUnbalancingStrikeTimer = urand(8000, 20000);
+//                 m_uiUnbalancingStrikeTimer = urand(8000, 20000);
+                m_uiUnbalancingStrikeTimer = urand(80000, 200000);
         }
         else
             m_uiUnbalancingStrikeTimer -= uiDiff;
@@ -292,7 +302,8 @@ struct boss_veknilashAI : public boss_twin_emperorsAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, SPELL_UPPERCUT, SELECT_FLAG_IN_MELEE_RANGE))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_UPPERCUT) == CAST_OK)
-                    m_uiUppercutTimer = urand(15000, 30000);
+//                     m_uiUppercutTimer = urand(15000, 30000);
+                    m_uiUppercutTimer = urand(150000, 300000);
             }
         }
         else
@@ -316,15 +327,20 @@ struct boss_veklorAI : public boss_twin_emperorsAI
     {
         boss_twin_emperorsAI::Reset();
 
-        m_uiShadowBoltTimer    = 1000;
-        m_uiBlizzardTimer      = urand(15000, 20000);
-        m_uiArcaneBurstTimer   = 1000;
+//         m_uiShadowBoltTimer    = 1000;
+//         m_uiBlizzardTimer      = urand(15000, 20000);
+//         m_uiArcaneBurstTimer   = 1000;
+        m_uiShadowBoltTimer    = 10000;
+        m_uiBlizzardTimer      = urand(150000, 200000);
+        m_uiArcaneBurstTimer   = 10000;
     }
 
     void MoveInLineOfSight(Unit* pWho) override
     {
         if (m_pInstance && m_pInstance->GetData(TYPE_TWINS) == IN_PROGRESS && pWho->GetEntry() == NPC_VEKNILASH && pWho->IsWithinDistInMap(m_creature, 60.0f))
-            DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        {
+//             DoCastSpellIfCan(pWho, SPELL_HEAL_BROTHER);
+        }
 
         ScriptedAI::MoveInLineOfSight(pWho);
     }
@@ -386,7 +402,8 @@ struct boss_veklorAI : public boss_twin_emperorsAI
         if (m_uiShadowBoltTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_SHADOW_BOLT) == CAST_OK)
-                m_uiShadowBoltTimer = 2000;
+//                 m_uiShadowBoltTimer = 2000;
+                m_uiShadowBoltTimer = 20000;
         }
         else
             m_uiShadowBoltTimer -= uiDiff;
@@ -396,7 +413,8 @@ struct boss_veklorAI : public boss_twin_emperorsAI
             if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
             {
                 if (DoCastSpellIfCan(pTarget, SPELL_BLIZZARD) == CAST_OK)
-                    m_uiBlizzardTimer = urand(15000, 30000);
+//                     m_uiBlizzardTimer = urand(15000, 30000);
+                    m_uiBlizzardTimer = urand(150000, 300000);
             }
         }
         else
@@ -405,7 +423,8 @@ struct boss_veklorAI : public boss_twin_emperorsAI
         if (m_uiArcaneBurstTimer < uiDiff)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_ARCANE_BURST) == CAST_OK)
-                m_uiArcaneBurstTimer = 5000;
+//                 m_uiArcaneBurstTimer = 5000;
+                m_uiArcaneBurstTimer = 50000;
         }
         else
             m_uiArcaneBurstTimer -= uiDiff;

@@ -60,12 +60,19 @@ struct boss_sarturaAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiWhirlWindTimer = 30000;
-        m_uiWhirlWindRandomTimer = urand(3000, 7000);
-        m_uiWhirlWindEndTimer = 0;
-        m_uiAggroResetTimer = urand(45000, 55000);
-        m_uiAggroResetEndTimer = 0;
-        m_uiEnrageHardTimer = 10 * 60000;
+//         m_uiWhirlWindTimer = 30000;
+//         m_uiWhirlWindRandomTimer = urand(3000, 7000);
+//         m_uiWhirlWindEndTimer = 0;
+//         m_uiAggroResetTimer = urand(45000, 55000);
+//         m_uiAggroResetEndTimer = 0;
+//         m_uiEnrageHardTimer = 10 * 60000;
+        
+        m_uiWhirlWindTimer = 300000;
+        m_uiWhirlWindRandomTimer = urand(30000, 70000);
+        m_uiWhirlWindEndTimer = 30000;
+        m_uiAggroResetTimer = urand(450000, 550000);
+        m_uiAggroResetEndTimer = 30000;
+        m_uiEnrageHardTimer = 100 * 60000;
 
         m_bIsEnraged = false;
     }
@@ -110,7 +117,8 @@ struct boss_sarturaAI : public ScriptedAI
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     m_creature->FixateTarget(pTarget);
 
-                m_uiWhirlWindRandomTimer = urand(3000, 7000);
+//                 m_uiWhirlWindRandomTimer = urand(3000, 7000);
+                m_uiWhirlWindRandomTimer = urand(30000, 70000);
             }
             else
                 m_uiWhirlWindRandomTimer -= uiDiff;
@@ -120,7 +128,8 @@ struct boss_sarturaAI : public ScriptedAI
             {
                 m_creature->FixateTarget(nullptr);
                 m_uiWhirlWindEndTimer = 0;
-                m_uiWhirlWindTimer = urand(25000, 40000);
+//                 m_uiWhirlWindTimer = urand(25000, 40000);
+                m_uiWhirlWindTimer = urand(250000, 400000);
             }
             else
                 m_uiWhirlWindEndTimer -= uiDiff;
@@ -132,8 +141,10 @@ struct boss_sarturaAI : public ScriptedAI
             {
                 if (DoCastSpellIfCan(m_creature, SPELL_WHIRLWIND) == CAST_OK)
                 {
-                    m_uiWhirlWindEndTimer = 15000;
-                    m_uiWhirlWindRandomTimer = 500;
+//                     m_uiWhirlWindEndTimer = 15000;
+//                     m_uiWhirlWindRandomTimer = 500;
+                    m_uiWhirlWindEndTimer = 150000;
+                    m_uiWhirlWindRandomTimer = 5000;
                 }
             }
             else
@@ -147,7 +158,8 @@ struct boss_sarturaAI : public ScriptedAI
                     if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
                         m_creature->FixateTarget(pTarget);
 
-                    m_uiAggroResetEndTimer = 5000;
+//                     m_uiAggroResetEndTimer = 5000;
+                    m_uiAggroResetEndTimer = 50000;
                 }
                 else
                     m_uiAggroResetTimer -= uiDiff;
@@ -159,7 +171,8 @@ struct boss_sarturaAI : public ScriptedAI
                 {
                     m_creature->FixateTarget(nullptr);
                     m_uiAggroResetEndTimer = 0;
-                    m_uiAggroResetTimer = urand(35000, 45000);
+//                     m_uiAggroResetTimer = urand(35000, 45000);
+                    m_uiAggroResetTimer = urand(350000, 450000);
                 }
                 else
                     m_uiAggroResetEndTimer -= uiDiff;
@@ -167,7 +180,8 @@ struct boss_sarturaAI : public ScriptedAI
         }
 
         // If she is 20% enrage
-        if (!m_bIsEnraged && m_creature->GetHealthPercent() <= 20.0f)
+//         if (!m_bIsEnraged && m_creature->GetHealthPercent() <= 20.0f)
+        if (!m_bIsEnraged && m_creature->GetHealthPercent() <= 10.0f)
         {
             if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE, m_uiWhirlWindEndTimer ? CAST_TRIGGERED : 0) == CAST_OK)
                 m_bIsEnraged = true;
@@ -204,12 +218,19 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
 
     void Reset() override
     {
-        m_uiWhirlWindTimer = 30000;
-        m_uiWhirlWindRandomTimer = urand(3000, 7000);
-        m_uiWhirlWindEndTimer = 0;
-        m_uiAggroResetTimer = urand(45000, 55000);
-        m_uiAggroResetEndTimer = 0;
-        m_uiKnockBackTimer = 10000;
+//         m_uiWhirlWindTimer = 30000;
+//         m_uiWhirlWindRandomTimer = urand(3000, 7000);
+//         m_uiWhirlWindEndTimer = 0;
+//         m_uiAggroResetTimer = urand(45000, 55000);
+//         m_uiAggroResetEndTimer = 0;
+//         m_uiKnockBackTimer = 10000;
+        
+        m_uiWhirlWindTimer = 300000;
+        m_uiWhirlWindRandomTimer = urand(30000, 70000);
+        m_uiWhirlWindEndTimer = 30000;
+        m_uiAggroResetTimer = urand(450000, 550000);
+        m_uiAggroResetEndTimer = 10000;
+        m_uiKnockBackTimer = 100000;
     }
 
     void UpdateAI(const uint32 uiDiff) override
@@ -225,7 +246,8 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
                 if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     m_creature->FixateTarget(pTarget);
 
-                m_uiWhirlWindRandomTimer = urand(3000, 7000);
+//                 m_uiWhirlWindRandomTimer = urand(3000, 7000);
+                m_uiWhirlWindRandomTimer = urand(30000, 70000);
             }
             else
                 m_uiWhirlWindRandomTimer -= uiDiff;
@@ -235,7 +257,8 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
             {
                 m_creature->FixateTarget(nullptr);
                 m_uiWhirlWindEndTimer = 0;
-                m_uiWhirlWindTimer = urand(25000, 40000);
+//                 m_uiWhirlWindTimer = urand(25000, 40000);
+                m_uiWhirlWindTimer = urand(250000, 400000);
             }
             else
                 m_uiWhirlWindEndTimer -= uiDiff;
@@ -247,8 +270,10 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
             {
                 if (DoCastSpellIfCan(m_creature, SPELL_WHIRLWIND_ADD) == CAST_OK)
                 {
-                    m_uiWhirlWindEndTimer = 8000;
-                    m_uiWhirlWindRandomTimer = 500;
+//                     m_uiWhirlWindEndTimer = 8000;
+//                     m_uiWhirlWindRandomTimer = 500;
+                    m_uiWhirlWindEndTimer = 80000;
+                    m_uiWhirlWindRandomTimer = 5000;
                 }
             }
             else
@@ -262,7 +287,8 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
                     if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1))
                         m_creature->FixateTarget(pTarget);
 
-                    m_uiAggroResetEndTimer = 5000;
+//                     m_uiAggroResetEndTimer = 5000;
+                    m_uiAggroResetEndTimer = 50000;
                 }
                 else
                     m_uiAggroResetTimer -= uiDiff;
@@ -273,7 +299,8 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
                 {
                     m_creature->FixateTarget(nullptr);
                     m_uiAggroResetEndTimer = 0;
-                    m_uiAggroResetTimer = urand(30000, 40000);
+//                     m_uiAggroResetTimer = urand(30000, 40000);
+                    m_uiAggroResetTimer = urand(300000, 400000);
                 }
                 else
                     m_uiAggroResetEndTimer -= uiDiff;
@@ -283,7 +310,8 @@ struct mob_sartura_royal_guardAI : public ScriptedAI
             if (m_uiKnockBackTimer < uiDiff)
             {
                 if (DoCastSpellIfCan(m_creature, SPELL_KNOCKBACK) == CAST_OK)
-                    m_uiKnockBackTimer = urand(10000, 20000);
+//                     m_uiKnockBackTimer = urand(10000, 20000);
+                    m_uiKnockBackTimer = urand(100000, 200000);
             }
             else
                 m_uiKnockBackTimer -= uiDiff;
