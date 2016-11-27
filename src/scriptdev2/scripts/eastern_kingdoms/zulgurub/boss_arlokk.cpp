@@ -75,7 +75,8 @@ struct boss_arlokkAI : public ScriptedAI
         m_uiTransformTimer  = 30000;
         m_uiVanishTimer     = 5000;
         m_uiVisibleTimer    = 0;
-        m_uiSummonTimer     = 5000;
+        //m_uiSummonTimer     = 5000;
+        m_uiSummonTimer     = 600000;
 
         m_bIsPhaseTwo = false;
 
@@ -132,7 +133,8 @@ struct boss_arlokkAI : public ScriptedAI
                     m_creature->SummonCreature(NPC_ZULIAN_PROWLER, pTrigger->GetPositionX(), pTrigger->GetPositionY(), pTrigger->GetPositionZ(), 0, TEMPSUMMON_TIMED_OOC_DESPAWN, 30000);
             }
 
-            m_uiSummonTimer = 5000;
+            //m_uiSummonTimer = 5000;
+            m_uiSummonTimer = 600000;
         }
         else
             m_uiSummonTimer -= uiDiff;
