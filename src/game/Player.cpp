@@ -9214,8 +9214,16 @@ InventoryResult Player::CanUseItem(Item* pItem, bool direct_action) const
             }
 
             if (pProto->RequiredReputationFaction && uint32(GetReputationRank(pProto->RequiredReputationFaction)) < pProto->RequiredReputationRank)
+            {
+                if (pProto->RequiredReputationFaction == 730 &&
+                    uint32(GetReputationRank(729)) >= pProto->RequiredReputationRank) // Frostwolf Clan
+                    return EQUIP_ERR_OK;
+                if (pProto->RequiredReputationFaction == 890 &&
+                    uint32(GetReputationRank(889)) >= pProto->RequiredReputationRank) // Warsong Outriders
+                    return EQUIP_ERR_OK;
+                    
                 return EQUIP_ERR_CANT_EQUIP_REPUTATION;
-
+            }
             return EQUIP_ERR_OK;
         }
     }
@@ -16469,8 +16477,21 @@ bool Player::BuyItemFromVendor(ObjectGuid vendorGuid, uint32 item, uint8 count, 
 
     if (uint32(GetReputationRank(reqFaction)) < pProto->RequiredReputationRank)
     {
-        SendBuyError(BUY_ERR_REPUTATION_REQUIRE, pCreature, item, 0);
-        return false;
+        if (reqFaction == 730 &&
+            uint32(GetReputationRank(729)) >= pProto->RequiredReputationRank) // Frostwolf Clan
+        {
+//             return true;
+        }
+        else if (reqFaction == 890 &&
+            uint32(GetReputationRank(889)) >= pProto->RequiredReputationRank) // Warsong Outriders
+        {
+//             return true;
+        }
+        else
+        {
+            SendBuyError(BUY_ERR_REPUTATION_REQUIRE, pCreature, item, 0);
+            return false;
+        }
     }
 
     // not check level requiremnt for normal items (PvP related bonus items is another case)
