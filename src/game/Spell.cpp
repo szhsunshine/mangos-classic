@@ -2569,7 +2569,10 @@ void Spell::Prepare()
     ReSetTimer();
 
     if (!m_IsTriggeredSpell)
-        m_caster->RemoveAurasOnCast(m_spellInfo);
+        if (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE &&
+            (m_spellInfo->SpellFamilyFlags & uint64(0x00000080) ||
+                m_spellInfo->SpellFamilyFlags & 2147483648)))
+            m_caster->RemoveAurasOnCast(m_spellInfo);
 
     // add non-triggered (with cast time and without)
     if (!m_IsTriggeredSpell)
@@ -2713,6 +2716,16 @@ void Spell::cast(bool skipCheck)
             // Divine Shield, Divine Protection (Blessing of Protection in paladin switch case)
             else if (m_spellInfo->Mechanic == MECHANIC_INVULNERABILITY)
                 AddPrecastSpell(25771);                     // Forbearance
+            break;
+        }
+        case SPELLFAMILY_ROGUE:
+        {
+            // exit stealth on sap when improved sap is not skilled
+            if (m_spellInfo->SpellFamilyFlags & uint64(0x00000080) && m_caster->GetTypeId() == TYPEID_PLAYER &&
+                (!m_caster->GetAura(14076,SpellEffectIndex(0)) &&
+                    !m_caster->GetAura(14094,SpellEffectIndex(0)) &&
+                    !m_caster->GetAura(14095,SpellEffectIndex(0))))
+                m_caster->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
             break;
         }
         case SPELLFAMILY_WARRIOR:
