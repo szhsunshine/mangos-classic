@@ -140,9 +140,9 @@ void BattleGroundAB::Update(uint32 diff)
 
         // Test win condition
         if (m_TeamScores[TEAM_INDEX_ALLIANCE] >= BG_AB_MAX_TEAM_SCORE)
-            EndBattleGround(ALLIANCE);
+            BattleGroundAB::EndBattleGround(ALLIANCE);
         if (m_TeamScores[TEAM_INDEX_HORDE] >= BG_AB_MAX_TEAM_SCORE)
-            EndBattleGround(HORDE);
+            BattleGroundAB::EndBattleGround(HORDE);
     }
 }
 
