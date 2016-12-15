@@ -656,6 +656,26 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     if (!pCurrChar->IsStandState() && !pCurrChar->hasUnitState(UNIT_STAT_STUNNED))
         pCurrChar->SetStandState(UNIT_STAND_STATE_STAND);
 
+    // transmogrification
+    QueryResult* transmog = CharacterDatabase.PQuery("SELECT slot, item_guid FROM character_transmog WHERE guid = '%u'", pCurrChar->GetGUIDLow());
+    if (transmog)
+    {
+        do
+        {
+            Field* fields = transmog->Fetch();
+            uint8 slot = fields[0].GetUInt8();
+            ObjectGuid item_guid = ObjectGuid(HIGHGUID_ITEM, fields[1].GetUInt32());
+
+            if (Item* pItem = pCurrChar->GetItemByGuid(item_guid))
+            {
+                pCurrChar->SetVisibleItemSlot(slot, pItem);
+            }
+        }
+        while (transmog->NextRow());
+
+        delete transmog;
+    }
+
     m_playerLoading = false;
     delete holder;
 }
