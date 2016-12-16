@@ -1104,10 +1104,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
     {
         // only ammor and weapon can be transmoged
         if (item->GetProto()->Class != 2 && item->GetProto()->Class != 4)
-        {
-            _player->SendEquipError(EQUIP_ERR_EQUIPPED_CANT_BE_WRAPPED, item, nullptr);
             return;
-        }
 
         // skip Miscellaneous / Libram / Idol / Totem
         if (item->GetProto()->Class == 4 &&
@@ -1115,10 +1112,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
                 || item->GetProto()->SubClass == 7
                 || item->GetProto()->SubClass == 8
                 || item->GetProto()->SubClass == 9))
-        {
-            _player->SendEquipError(EQUIP_ERR_EQUIPPED_CANT_BE_WRAPPED, item, nullptr);
             return;
-        }
 
         // find the slot of the item
         uint8 slots[4];
@@ -1127,33 +1121,23 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 
         // skip empty slot
         if (!_player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-        {
             if(slot == EQUIPMENT_SLOT_MAINHAND && _player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
-            {
                 // when mainhand is empty, use offhand
                 slot = EQUIPMENT_SLOT_OFFHAND;
-            }
             else
-            {
-                _player->SendEquipError(EQUIP_ERR_EQUIPPED_CANT_BE_WRAPPED, item, nullptr);
                 return;
-            }
-        }
 
         // save to db
-        CharacterDatabase.BeginTransaction();
         uint32 guid = item->GetOwnerGuid().GetCounter();
-
+        CharacterDatabase.BeginTransaction();
         // remove old transmog
         CharacterDatabase.PExecute("DELETE FROM character_transmog WHERE guid = %u AND slot = %u", guid, slot);
-
         // insert new transmog
         CharacterDatabase.PExecute("INSERT INTO character_transmog VALUES ('%u', '%u', '%u', '%u')", guid, slot, item->GetGUIDLow(), 0);
-
-        // transmogrification effect
-        _player->SetVisibleItemSlot(slot, item);
-
         CharacterDatabase.CommitTransaction();
+
+        // make transmogrification effect
+        _player->SetVisibleItemSlot(slot, item);
 
         // remove the transmog stone
         uint32 count = 1;

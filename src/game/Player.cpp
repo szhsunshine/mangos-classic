@@ -9664,6 +9664,10 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update)
                     // remove held enchantments
                     if (slot == EQUIPMENT_SLOT_MAINHAND)
                         pItem->ClearEnchantment(PROP_ENCHANTMENT_SLOT_3);
+
+                    // remove the transmog record
+                    if (GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET)) != pItem->GetEntry())
+                        CharacterDatabase.PExecute("DELETE FROM character_transmog WHERE guid = %u AND slot = %u", pItem->GetOwnerGuid().GetCounter(), slot);
                 }
             }
 
@@ -9672,23 +9676,6 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update)
 
             if (slot < EQUIPMENT_SLOT_END)
                 SetVisibleItemSlot(slot, nullptr);
-
-            // remove transmog effect
-            // skip not equipped
-            if (pItem->IsEquipped())
-            {
-                // save to db
-                CharacterDatabase.BeginTransaction();
-                uint32 guid = pItem->GetOwnerGuid().GetCounter();
-                QueryResult* transmog = CharacterDatabase.PQuery("SELECT slot, item_guid FROM character_transmog WHERE guid = '%u' AND slot = '%u'", guid, slot);
-                if (transmog)
-                {
-                    // remove the transmog record
-                    CharacterDatabase.PExecute("DELETE FROM character_transmog WHERE guid = %u AND slot = %u", guid, slot);
-                    delete transmog;
-                }
-                CharacterDatabase.CommitTransaction();
-            }
         }
         else
         {

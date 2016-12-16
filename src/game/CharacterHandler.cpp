@@ -663,16 +663,10 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         do
         {
             Field* fields = transmog->Fetch();
-            uint8 slot = fields[0].GetUInt8();
-            ObjectGuid item_guid = ObjectGuid(HIGHGUID_ITEM, fields[1].GetUInt32());
-
-            if (Item* pItem = pCurrChar->GetItemByGuid(item_guid))
-            {
-                pCurrChar->SetVisibleItemSlot(slot, pItem);
-            }
+            if (Item* pItem = pCurrChar->GetItemByGuid(ObjectGuid(HIGHGUID_ITEM, fields[1].GetUInt32())))
+                pCurrChar->SetVisibleItemSlot(fields[0].GetUInt8(), pItem);
         }
         while (transmog->NextRow());
-
         delete transmog;
     }
 
