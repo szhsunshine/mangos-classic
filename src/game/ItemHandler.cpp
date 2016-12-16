@@ -1137,7 +1137,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         CharacterDatabase.CommitTransaction();
 
         // make transmogrification effect
-        _player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetEntry());
+        _player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET), item->GetEntry());
 
         // remove the transmog stone
         uint32 count = 1;
