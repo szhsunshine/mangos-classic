@@ -1116,7 +1116,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 
         // find the slot of the item
         uint8 slots[4];
-        _player->ViableEquipSlots(item->GetProto(), &slots[0]);
+        _player->ViableEquipSlots(item->GetProto(), &slots[0], true);
         uint8 slot = slots[0];
 
         // skip empty slot
@@ -1137,7 +1137,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         CharacterDatabase.CommitTransaction();
 
         // make transmogrification effect
-        _player->SetVisibleItemSlot(slot, item);
+        _player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetEntry());
 
         // remove the transmog stone
         uint32 count = 1;

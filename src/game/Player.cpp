@@ -7373,7 +7373,7 @@ uint8 Player::FindEquipSlot(ItemPrototype const* proto, uint32 slot, bool swap) 
 }
 
 
-bool Player::ViableEquipSlots(ItemPrototype const* proto, uint8 *viable_slots) const
+bool Player::ViableEquipSlots(ItemPrototype const* proto, uint8 *viable_slots, bool transmog /*= false*/) const
 {
     uint8 pClass;
 
@@ -7391,7 +7391,7 @@ bool Player::ViableEquipSlots(ItemPrototype const* proto, uint8 *viable_slots) c
     viable_slots[2] = NULL_SLOT;
     viable_slots[3] = NULL_SLOT;
 
-    if (CanUseItem(proto) == EQUIP_ERR_OK)
+    if (CanUseItem(proto) == EQUIP_ERR_OK || transmog)
     {
         //DEBUG_LOG("**** [Player::ViableEquipSlots] Class/Race/Faction determined viable ****");
 

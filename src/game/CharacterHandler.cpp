@@ -664,7 +664,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         {
             Field* fields = transmog->Fetch();
             if (Item* pItem = pCurrChar->GetItemByGuid(ObjectGuid(HIGHGUID_ITEM, fields[1].GetUInt32())))
-                pCurrChar->SetVisibleItemSlot(fields[0].GetUInt8(), pItem);
+                pCurrChar->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + (fields[0].GetUInt8() * MAX_VISIBLE_ITEM_OFFSET), pItem->GetEntry());
         }
         while (transmog->NextRow());
         delete transmog;
