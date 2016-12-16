@@ -3,6 +3,11 @@
 master 定期更新，与[官方](https://github.com/cmangos/mangos-classic)保持一致，作为主干
 
 ## branches
+
+### anti-speed-cheat
+
+防止加速外挂
+
 ### battleground-start-delay
 
 缩短战场开始时间
@@ -43,6 +48,10 @@ master 定期更新，与[官方](https://github.com/cmangos/mangos-classic)保�
 
 修复灵魂状态无法进入黑翼之巢
 
+### fix-logout-dead-crash
+
+修复在副本内死亡后下线引起宕机
+
 ### fix-rogue-improved-sap
 
 修复盗贼强化闷棍
@@ -50,6 +59,10 @@ master 定期更新，与[官方](https://github.com/cmangos/mangos-classic)保�
 ### forbid-instance-reset
 
 不允许队长在副本内重置副本
+
+### maintain-in-2-days
+
+缩短每周的荣誉计算周期
 
 ### nerf-azuregos
 ### nerf-boss-kazzak
