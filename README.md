@@ -28,6 +28,10 @@ master 定期更新，与[官方](https://github.com/cmangos/mangos-classic)保�
 
 允许战场混排
 
+### dual-talents
+
+双天赋
+
 ### enhance-mobs-melee-attack
 
 当怪物无法移动时，去除近战攻击限制，防止飞天外挂或卡视角刷怪
