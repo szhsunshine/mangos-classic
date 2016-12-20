@@ -600,6 +600,43 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                 }
                 case 16589:                                 // Noggenfogger Elixir
                 {
+                    if (m_CastItem && m_CastItem->GetEntry() == 90002) // dual talents logic
+                    {
+                        if (m_caster->isInCombat())
+                            return;
+
+                        // load the second talent
+                        QueryResult* spellSecond = CharacterDatabase.PQuery("SELECT spell,active,disabled FROM character_spell_dual WHERE guid = '%u' AND flag = 0", m_caster->GetGUIDLow());
+
+                        CharacterDatabase.BeginTransaction();
+                        // if the second is empty, build table_spell_dual and remove table_spell
+                        if (!spellSecond)
+                        {
+                            CharacterDatabase.PExecute("INSERT INTO character_spell_dual (guid,spell,active,disabled,flag) SELECT guid,spell,active,disabled,0 FROM character_spell WHERE guid = '%u'", m_caster->GetGUIDLow());
+                            CharacterDatabase.PExecute("DELETE FROM character_spell WHERE guid = %u", m_caster->GetGUIDLow());
+                        }
+                        // else switch table_spell and table_spell_dual
+                        else
+                        {
+                            CharacterDatabase.PExecute("INSERT INTO character_spell_dual (guid,spell,active,disabled,flag) SELECT guid,spell,active,disabled,1 FROM character_spell WHERE guid = '%u'", m_caster->GetGUIDLow());
+                            CharacterDatabase.PExecute("DELETE FROM character_spell WHERE guid = %u", m_caster->GetGUIDLow());
+                            CharacterDatabase.PExecute("INSERT INTO character_spell (guid,spell,active,disabled) SELECT guid,spell,active,disabled FROM character_spell_dual WHERE guid = '%u' AND flag = 0", m_caster->GetGUIDLow());
+                            CharacterDatabase.PExecute("DELETE FROM character_spell_dual WHERE guid = %u AND flag = 0", m_caster->GetGUIDLow());
+                            CharacterDatabase.PExecute("UPDATE character_spell_dual SET flag = 0 WHERE guid = %u AND flag = 1", m_caster->GetGUIDLow());
+                        }
+                        CharacterDatabase.CommitTransaction();
+
+                        // empty caster's health and mana
+                        m_caster->SetHealth(1);
+                        m_caster->SetPower(POWER_MANA, 0);
+                        m_caster->SetPower(POWER_RAGE, 0);
+                        m_caster->SetPower(POWER_ENERGY, 0);
+
+                        // logout
+                        ((Player*)m_caster)->GetSession()->LogoutPlayer(true);
+                        return;
+                    }
+
                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
                     {
                         const uint32 spell_list[3] = {16595, 16593, 16591};
