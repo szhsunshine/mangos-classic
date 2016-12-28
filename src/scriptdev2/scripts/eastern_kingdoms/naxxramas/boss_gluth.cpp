@@ -80,7 +80,8 @@ struct boss_gluthAI : public ScriptedAI
         m_uiMortalWoundTimer  = 10000;
         m_uiDecimateTimer     = 110000;
         m_uiEnrageTimer       = 10000;
-        m_uiSummonTimer       = 6000;
+//         m_uiSummonTimer       = 6000;
+        m_uiSummonTimer       = 600000;
         m_uiRoarTimer         = 20000;
         m_uiZombieSearchTimer = 3000;
 
@@ -223,7 +224,8 @@ struct boss_gluthAI : public ScriptedAI
             uint8 uiPos2 = (uiPos1 + urand(1, MAX_ZOMBIE_LOCATIONS - 1)) % MAX_ZOMBIE_LOCATIONS;
             m_creature->SummonCreature(NPC_ZOMBIE_CHOW, aZombieSummonLoc[uiPos2][0], aZombieSummonLoc[uiPos2][1], aZombieSummonLoc[uiPos2][2], 0.0f, TEMPSUMMON_DEAD_DESPAWN, 0);
 
-            m_uiSummonTimer = 6000;
+//             m_uiSummonTimer = 6000;
+            m_uiSummonTimer = 600000;
         }
         else
             m_uiSummonTimer -= uiDiff;
