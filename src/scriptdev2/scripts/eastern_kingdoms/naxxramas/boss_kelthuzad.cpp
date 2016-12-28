@@ -64,9 +64,12 @@ enum
 
     SPELL_CHANNEL_VISUAL                = 29423,
 
-    MAX_SOLDIER_COUNT                   = 120,
-    MAX_ABOMINATION_COUNT               = 14,
-    MAX_BANSHEE_COUNT                   = 14,
+//     MAX_SOLDIER_COUNT                   = 120,
+//     MAX_ABOMINATION_COUNT               = 14,
+//     MAX_BANSHEE_COUNT                   = 14,    
+    MAX_SOLDIER_COUNT                   = 2,
+    MAX_ABOMINATION_COUNT               = 1,
+    MAX_BANSHEE_COUNT                   = 1,
 };
 
 static float M_F_ANGLE = 0.2f;                              // to adjust for map rotation
@@ -86,7 +89,8 @@ struct boss_kelthuzadAI : public ScriptedAI
     {
         m_pInstance = (instance_naxxramas*)pCreature->GetInstanceData();
 
-        m_uiGuardiansCountMax = 4;
+//         m_uiGuardiansCountMax = 4;
+        m_uiGuardiansCountMax = 1;
         Reset();
     }
 
